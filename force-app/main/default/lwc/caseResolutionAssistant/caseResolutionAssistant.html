@@ -1,0 +1,169 @@
+<template>
+    <div class="cra-container">
+
+        <div class={inputClass}>
+            <div class="cra-header">
+                <h2 class="cra-title">How can we help you today?</h2>
+                <p class="cra-subtitle">Get instant AI-powered answers to your questions.</p>
+            </div>
+            <div class="cra-form" novalidate>
+                <div class="cra-row">
+                    <div class="cra-field">
+                        <label class="cra-label" for="firstName">
+                            First Name <span class="cra-required" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                            class={firstNameInputClass}
+                            id="firstName"
+                            type="text"
+                            value={firstName}
+                            onchange={handleFirstNameChange}
+                            oninput={handleFirstNameChange}
+                            onblur={handleFirstNameBlur}
+                            required
+                            aria-required="true"
+                            aria-invalid={firstNameError}
+                            autocomplete="given-name" />
+                        <template if:true={firstNameError}>
+                            <p class="cra-field-error" role="alert">{firstNameError}</p>
+                        </template>
+                    </div>
+                    <div class="cra-field">
+                        <label class="cra-label" for="lastName">
+                            Last Name <span class="cra-required" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                            class={lastNameInputClass}
+                            id="lastName"
+                            type="text"
+                            value={lastName}
+                            onchange={handleLastNameChange}
+                            oninput={handleLastNameChange}
+                            onblur={handleLastNameBlur}
+                            required
+                            aria-required="true"
+                            aria-invalid={lastNameError}
+                            autocomplete="family-name" />
+                        <template if:true={lastNameError}>
+                            <p class="cra-field-error" role="alert">{lastNameError}</p>
+                        </template>
+                    </div>
+                </div>
+                <div class="cra-field">
+                    <label class="cra-label" for="product">Product</label>
+                    <select
+                        class="cra-input cra-select"
+                        id="product"
+                        value={product}
+                        onchange={handleProductChange}>
+                        <option value="">-- Select a product (optional) --</option>
+                        <template for:each={productOptions} for:item="opt">
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        </template>
+                    </select>
+                </div>
+                <div class="cra-field">
+                    <label class="cra-label" for="email">
+                        Email <span class="cra-required" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                        class={emailInputClass}
+                        id="email"
+                        type="email"
+                        value={email}
+                        onchange={handleEmailChange}
+                        oninput={handleEmailChange}
+                        onblur={handleEmailBlur}
+                        required
+                        aria-required="true"
+                        aria-invalid={emailError}
+                        autocomplete="email" />
+                    <template if:true={emailError}>
+                        <p class="cra-field-error" role="alert">{emailError}</p>
+                    </template>
+                </div>
+                <div class="cra-field">
+                    <label class="cra-label" for="question">
+                        Your Question <span class="cra-required" aria-hidden="true">*</span>
+                    </label>
+                    <textarea
+                        class={questionInputClass}
+                        id="question"
+                        value={question}
+                        onchange={handleQuestionChange}
+                        oninput={handleQuestionChange}
+                        onblur={handleQuestionBlur}
+                        required
+                        aria-required="true"
+                        aria-invalid={questionError}
+                        placeholder="Describe what you need help with..."></textarea>
+                    <template if:true={questionError}>
+                        <p class="cra-field-error" role="alert">{questionError}</p>
+                    </template>
+                </div>
+                <div class={errorClass}>{errorMessage}</div>
+                <button class="cra-button cra-button--primary" onclick={handleFindSolution}>
+                    Find a Solution
+                </button>
+            </div>
+        </div>
+
+        <div class={loadingClass}>
+            <div class="cra-loading">
+                <div class="cra-spinner"></div>
+                <p class="cra-loading-text">Searching our knowledge base...</p>
+                <p class="cra-loading-subtext">This usually takes 5 to 30 seconds.</p>
+            </div>
+        </div>
+
+        <div class={recommendationClass}>
+            <div class="cra-badge">KNOWLEDGE ARTICLE FOUND</div>
+            <div class="cra-card">
+                <h3 class="cra-card-title">Recommended Solution</h3>
+                <div class="cra-card-body">{recommendation}</div>
+            </div>
+            <div class="cra-card-question">Did this answer resolve your question?</div>
+            <div class="cra-button-row">
+                <button class="cra-button cra-button--primary" onclick={handleYes}>
+                    Yes, resolved
+                </button>
+                <button class="cra-button cra-button--secondary" onclick={handleNo}>
+                    No, still need help
+                </button>
+            </div>
+        </div>
+
+        <div class={resolvingClass}>
+            <div class="cra-loading">
+                <div class="cra-spinner"></div>
+                <p class="cra-loading-text">Closing your case...</p>
+            </div>
+        </div>
+
+        <div class={resolvedClass}>
+            <div class="cra-success">
+                <div class="cra-success-icon">&check;</div>
+                <h2 class="cra-title">Glad we could help!</h2>
+                <p class="cra-subtitle">Your case has been closed. Thank you for using our support.</p>
+                <button class="cra-button cra-button--primary" onclick={handleReset}>
+                    Submit Another Question
+                </button>
+            </div>
+        </div>
+
+        <div class={caseCreatedClass}>
+            <div class="cra-info">
+                <div class="cra-success-icon cra-info-icon">i</div>
+                <h2 class="cra-title">A support agent will reach out to you</h2>
+                <p class="cra-subtitle">
+                    Your case <strong>{caseNumber}</strong> is now in our queue.
+                    We'll email you within one business day.
+                </p>
+                <button class="cra-button cra-button--primary" onclick={handleReset}>
+                    Done
+                </button>
+            </div>
+        </div>
+
+    </div>
+</template>

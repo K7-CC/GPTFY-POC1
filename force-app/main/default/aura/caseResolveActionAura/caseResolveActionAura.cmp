@@ -1,0 +1,17 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:html tag="style">
+        .slds-modal__content,
+        .modal-body,
+        .uiModal--horizontalForm .modal-body {
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none;
+        }
+        .slds-modal__container {
+            width: 32rem;
+            max-width: 95vw;
+        }
+    </aura:html>
+    <c:caseResolveAction recordId="{!v.recordId}" onclose="{!c.handleClose}" />
+</aura:component>

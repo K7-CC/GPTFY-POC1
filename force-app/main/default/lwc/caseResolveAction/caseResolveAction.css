@@ -1,0 +1,32 @@
+:host {
+    display: block;
+}
+
+.cra-modal {
+    box-sizing: border-box;
+}
+
+.cra-instructions {
+    line-height: 1.4;
+}
+
+.cra-field {
+    margin-bottom: 0;
+}
+
+.cra-textarea {
+    min-height: 2.75rem;
+    max-height: 16rem;
+    resize: vertical;
+    overflow-y: auto;
+    line-height: 1.5;
+    padding: 0.5rem 0.75rem;
+}
+
+.cra-textarea:focus {
+    box-shadow: var(--lwc-brandPrimary, rgb(1, 118, 211)) 0 0 0 1px inset;
+}
+
+.cra-actions {
+    margin-top: 0.75rem;
+}

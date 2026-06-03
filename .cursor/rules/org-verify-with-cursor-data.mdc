@@ -1,0 +1,56 @@
+---
+description: After building new Salesforce features, verify in the org with cursor-tagged dummy data
+alwaysApply: true
+---
+
+# Org verification with cursor-tagged test data
+
+Whenever you implement or change Salesforce functionality in this project (Apex, LWC, Flow, triggers, quick actions), **verify it yourself in the org** before marking the task done. Do not rely only on unit tests or "deploy succeeded."
+
+## Default org
+
+- Target org alias: `gptfy-poc1` (`kesavpoc@gptfy.com`)
+- Use `sf` CLI commands; do not ask the user to test unless org access fails
+
+## Tag all test records with `cursor`
+
+Every dummy record created for verification must include **`cursor`** in a searchable field so the user can find and clean up test data:
+
+- **Case**: `Subject = 'cursor-test-{timestamp} {scenario description}'`
+- **Knowledge article**: title inherits from Case Subject (already tagged)
+- **Other objects**: prefix Name/Subject/Title with `cursor-test-{timestamp}`
+
+Example timestamp format: `Datetime.now().format('yyyyMMdd-HHmmss')`
+
+## How to verify
+
+1. Deploy changed metadata if not already in the org
+2. Write a script under `scripts/apex/` (e.g. `scripts/apex/test{FeatureName}.apex`)
+3. Run: `sf apex run --file scripts/apex/test{FeatureName}.apex --target-org gptfy-poc1`
+4. Query results: `sf data query --query "SELECT ... WHERE Subject LIKE 'cursor-test%'" --target-org gptfy-poc1`
+5. Report back to the user:
+   - What was tested (create / update / dedupe / error path)
+   - Pass/fail for each assertion
+   - Record Ids and direct Lightning URLs
+   - The `cursor-test-...` marker string to search in the org
+
+## Script template
+
+```apex
+String marker = 'cursor-test-' + Datetime.now().format('yyyyMMdd-HHmmss');
+// 1. Create dummy data tagged with marker
+// 2. Invoke the feature (Apex method, DML, etc.)
+// 3. Query and System.debug assertions
+// 4. System.debug('=== CURSOR TEST COMPLETE ===');
+// 5. System.debug('Marker: ' + marker);
+```
+
+## When to skip
+
+- Read-only questions or code review with no new behavior
+- User explicitly says not to touch the org
+- Change is docs-only or local tooling with no Salesforce runtime
+
+## Leave test data in the org
+
+Do not delete cursor-tagged records unless the user asks. They use these to inspect results manually.

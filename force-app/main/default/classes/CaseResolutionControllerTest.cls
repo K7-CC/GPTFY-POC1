@@ -1,0 +1,193 @@
+/**
+ * Unit tests for CaseResolutionController.
+ *
+ * Covers the three @AuraEnabled methods plus a few edge cases so that
+ * code coverage comfortably exceeds the 75% Salesforce minimum.
+ * Tests run as a system user, so guest-profile permissions are NOT
+ * exercised here. Phase 9's smoke test in incognito covers that path.
+ */
+@IsTest
+private class CaseResolutionControllerTest {
+
+    @IsTest
+    static void createSupportCase_insertsCaseAndReturnsIdAndNumber() {
+        Test.startTest();
+        Map<String, String> result = CaseResolutionController.createSupportCase(
+            'Jane', 'Doe', 'jane@example.com', 'Cannot login to my account', null
+        );
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result map should not be null');
+        System.assertNotEquals(null, result.get('caseId'), 'caseId should be returned');
+        System.assertNotEquals(null, result.get('caseNumber'), 'caseNumber should be returned');
+
+        Case inserted = [
+            SELECT Id, Subject, Status, Origin, Priority, SuppliedName, SuppliedEmail, Product__c
+            FROM Case
+            WHERE Id = :result.get('caseId')
+        ];
+        System.assertEquals('Web', inserted.Origin, 'Origin must be Web for the Flow trigger to fire');
+        System.assertEquals('New', inserted.Status);
+        System.assertEquals('Medium', inserted.Priority);
+        System.assertEquals('Cannot login to my account', inserted.Subject);
+        System.assertEquals('Jane Doe', inserted.SuppliedName);
+        System.assertEquals('jane@example.com', inserted.SuppliedEmail);
+        System.assertEquals(null, inserted.Product__c, 'Product__c should be null when not supplied');
+    }
+
+    @IsTest
+    static void createSupportCase_persistsProductWhenSupplied() {
+        // Pick the first active picklist value at runtime so the test stays in
+        // sync with whatever real values are configured on the org.
+        List<Map<String, String>> options = CaseResolutionController.getProductOptions();
+        System.assert(!options.isEmpty(), 'Product__c must have at least one active picklist value');
+        String chosen = options[0].get('value');
+
+        Test.startTest();
+        Map<String, String> result = CaseResolutionController.createSupportCase(
+            'Pat', 'Smith', 'pat@example.com', 'Need help with the product', chosen
+        );
+        Test.stopTest();
+
+        Case inserted = [SELECT Product__c FROM Case WHERE Id = :result.get('caseId')];
+        System.assertEquals(chosen, inserted.Product__c,
+            'Product__c should be populated when supplied');
+    }
+
+    @IsTest
+    static void createSupportCase_truncatesLongSubject() {
+        String longSubject = 'a'.repeat(300);
+
+        Test.startTest();
+        Map<String, String> result = CaseResolutionController.createSupportCase(
+            'Long', 'Subject', 'l@example.com', longSubject, null
+        );
+        Test.stopTest();
+
+        Case inserted = [SELECT Subject FROM Case WHERE Id = :result.get('caseId')];
+        System.assertEquals(255, inserted.Subject.length(), 'Subject must be truncated to 255 chars');
+    }
+
+    @IsTest
+    static void createSupportCase_handlesNullInputsGracefully() {
+        Test.startTest();
+        Map<String, String> result = CaseResolutionController.createSupportCase(
+            null, null, null, null, null
+        );
+        Test.stopTest();
+
+        System.assertNotEquals(null, result.get('caseId'), 'Case should still be created with null inputs');
+    }
+
+    @IsTest
+    static void getRecommendation_returnsNullWhenDescriptionBlank() {
+        Case c = new Case(Origin = 'Web', Status = 'New', Subject = 'Test');
+        insert c;
+
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(c.Id);
+        Test.stopTest();
+
+        System.assertEquals(null, result, 'Should return null when Description is blank');
+    }
+
+    @IsTest
+    static void getRecommendation_returnsTextWhenDescriptionPopulated() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'Here is the AI-generated answer.'
+        );
+        insert c;
+
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(c.Id);
+        Test.stopTest();
+
+        System.assertEquals('Here is the AI-generated answer.', result);
+    }
+
+    @IsTest
+    static void getRecommendation_returnsNullForNullId() {
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(null);
+        Test.stopTest();
+
+        System.assertEquals(null, result, 'Null Id should return null, not throw');
+    }
+
+    @IsTest
+    static void resolveCase_closesCaseAndCopiesDescription() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'AI answer text'
+        );
+        insert c;
+
+        Test.startTest();
+        CaseResolutionController.resolveCase(c.Id);
+        // Test.stopTest() synchronously delivers any queued platform events,
+        // which fires CaseResolvedTrigger and lets us assert its side effects.
+        Test.stopTest();
+
+        Case closed = [SELECT Status, Resolution__c FROM Case WHERE Id = :c.Id];
+        System.assertEquals('Closed', closed.Status,
+            'CaseResolvedTrigger should close the Case via system context');
+        System.assertEquals('AI answer text', closed.Resolution__c,
+            'Description should be copied verbatim into Resolution__c');
+    }
+
+    @IsTest
+    static void resolveCase_leavesAlreadyClosedCaseUntouched() {
+        Case c = new Case(
+            Origin        = 'Web',
+            Status        = 'Closed',
+            Subject       = 'Test',
+            Description   = 'AI answer text',
+            Resolution__c = 'Pre-existing resolution'
+        );
+        insert c;
+
+        Test.startTest();
+        CaseResolutionController.resolveCase(c.Id);
+        Test.stopTest();
+
+        Case after = [SELECT Status, Resolution__c FROM Case WHERE Id = :c.Id];
+        System.assertEquals('Closed', after.Status, 'Status should remain Closed');
+        System.assertEquals('Pre-existing resolution', after.Resolution__c,
+            'Already-closed cases must not have Resolution__c overwritten');
+    }
+
+    @IsTest
+    static void resolveCase_throwsForNullId() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            CaseResolutionController.resolveCase(null);
+            Test.stopTest();
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        System.assert(threw, 'resolveCase(null) should throw AuraHandledException');
+    }
+
+    @IsTest
+    static void getProductOptions_returnsActiveValues() {
+        Test.startTest();
+        List<Map<String, String>> options = CaseResolutionController.getProductOptions();
+        Test.stopTest();
+
+        System.assertNotEquals(null, options, 'Options list should not be null');
+        System.assert(!options.isEmpty(),
+            'Product__c should have at least one active picklist value configured');
+        for (Map<String, String> entry : options) {
+            System.assert(String.isNotBlank(entry.get('label')),
+                'Each option must have a non-blank label');
+            System.assert(String.isNotBlank(entry.get('value')),
+                'Each option must have a non-blank value');
+        }
+    }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Published by CaseResolutionController.resolveCase when a guest clicks &quot;Yes, resolved&quot; in the Case Resolution Assistant LWC. Consumed by CaseResolvedTrigger, which runs as the Automated Process user and is therefore allowed to update the Case (the publishing Guest User cannot, due to license restrictions).</description>
+    <eventType>HighVolume</eventType>
+    <label>Case Resolved</label>
+    <pluralLabel>Case Resolved</pluralLabel>
+    <publishBehavior>PublishImmediately</publishBehavior>
+</CustomObject>
