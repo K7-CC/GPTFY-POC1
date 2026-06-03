@@ -1,9 +1,9 @@
-# GPTfy POC1 — Product Requirements Document (PRD)
+﻿# GPTfy POC1 â€” Product Requirements Document (PRD)
 
 | Field | Value |
 |-------|-------|
-| **Project** | GPTfy POC1 (Tungsten Automation — Use Case 2) |
-| **Status** | In Progress — Part 1 complete |
+| **Project** | GPTfy POC1 (Tungsten Automation â€” Use Case 2) |
+| **Status** | In Progress â€” Part 1 complete |
 | **Last updated** | 2026-06-03 |
 | **GitHub repo** | https://github.com/K7-CC/GPTFY-POC1 |
 | **Salesforce org** | `gptfy-poc1` (`kesavpoc@gptfy.com`) |
@@ -19,7 +19,7 @@ This PRD is a **living document**. It grows as the project grows.
 |------|------------|
 | After each commit / push | Run `.\scripts\update-prd-changelog.ps1` from the project root |
 | After a major milestone | Add a new **Part** section and create a git tag (e.g. `Part-2`) |
-| When the project is complete | Export to PDF — see [Export to PDF](#export-to-pdf) at the bottom |
+| When the project is complete | Export to PDF â€” see [Export to PDF](#export-to-pdf) at the bottom |
 
 ---
 
@@ -29,9 +29,9 @@ GPTfy POC1 helps customers get answers without waiting for an agent, and helps a
 
 **Three main paths:**
 
-1. **Guest portal** — A customer fills a form, AI writes an answer, customer clicks “Yes, resolved”, case closes, email sent.
-2. **Agent Resolve button** — An agent types a resolution, case closes, draft Knowledge article created.
-3. **Resolution email** — When any case with a guest email closes, the customer receives the answer by email.
+1. **Guest portal** â€” A customer fills a form, AI writes an answer, customer clicks â€œYes, resolvedâ€, case closes, email sent.
+2. **Agent Resolve button** â€” An agent types a resolution, case closes, draft Knowledge article created.
+3. **Resolution email** â€” When any case with a guest email closes, the customer receives the answer by email.
 
 ---
 
@@ -59,19 +59,19 @@ GPTfy POC1 helps customers get answers without waiting for an agent, and helps a
 
 ## 4. Features built (Part 1)
 
-### 4.1 Guest portal — Case Resolution Assistant
+### 4.1 Guest portal â€” Case Resolution Assistant
 
 **What the user sees:** A form on the Experience Cloud site.
 
 **Steps (guest journey):**
 
 1. Guest enters first name, last name, email, product (optional), and question.
-2. Guest clicks submit → a Case is created with `Origin = Web`.
-3. Screen shows “loading” while AI works (polls up to 12 times, every 2.5 seconds).
+2. Guest clicks submit â†’ a Case is created with `Origin = Web`.
+3. Screen shows â€œloadingâ€ while AI works (polls up to 12 times, every 2.5 seconds).
 4. AI answer appears in `Case.Description` (via GPTfy prompt flow).
 5. Guest reads the answer and can:
-   - Click **“Yes, resolved”** → case closes, resolution saved, email sent.
-   - Click **“No, create a case”** → case stays open for an agent.
+   - Click **â€œYes, resolvedâ€** â†’ case closes, resolution saved, email sent.
+   - Click **â€œNo, create a caseâ€** â†’ case stays open for an agent.
 
 **Technical pieces:**
 
@@ -85,16 +85,16 @@ GPTfy POC1 helps customers get answers without waiting for an agent, and helps a
 
 ---
 
-### 4.2 Guest “Yes, resolved” — Case close path
+### 4.2 Guest â€œYes, resolvedâ€ â€” Case close path
 
 **What happens behind the scenes:**
 
 1. LWC calls `CaseResolutionController.resolveCase(caseId)`.
 2. Apex publishes platform event `Case_Resolved__e` with the Case Id.
-   - Guest users cannot update Cases directly — platform event runs in system context.
+   - Guest users cannot update Cases directly â€” platform event runs in system context.
 3. Trigger `CaseResolvedTrigger` fires:
    - Sets `Status = Closed`
-   - Copies `Description` → `Resolution__c`
+   - Copies `Description` â†’ `Resolution__c`
 4. Record-triggered flow `Case_Resolution_Email_RTF` sends email (see 4.4).
 
 **Technical pieces:**
@@ -112,8 +112,8 @@ GPTfy POC1 helps customers get answers without waiting for an agent, and helps a
 
 **Steps (agent journey):**
 
-1. Agent opens a Case where `Status ≠ Closed`.
-2. Agent clicks **Resolve** → modal opens with rich-text editor.
+1. Agent opens a Case where `Status â‰  Closed`.
+2. Agent clicks **Resolve** â†’ modal opens with rich-text editor.
 3. Agent types resolution and clicks **Save**.
 4. System:
    - Saves text to `Case.Resolution__c`
@@ -147,7 +147,7 @@ GPTfy POC1 helps customers get answers without waiting for an agent, and helps a
 | **Subject** | `Case.Subject` (their original question) |
 | **Body** | Intro line + decoded resolution text |
 
-**Email body fix (Part 1):** Plain text format + HTML entity decoding (`&quot;` → `"`) so quotes display correctly.
+**Email body fix (Part 1):** Plain text format + HTML entity decoding (`&quot;` â†’ `"`) so quotes display correctly.
 
 **Org settings:**
 
@@ -168,29 +168,29 @@ GPTfy POC1 helps customers get answers without waiting for an agent, and helps a
 
 ## 5. End-to-end flow diagrams
 
-### Guest portal → close → email
+### Guest portal â†’ close â†’ email
 
 ```
 Guest form (LWC)
-    → createSupportCase (Apex)
-    → Case created (Origin=Web)
-    → Case_Resolution_RTF flow → GPTfy AI → Description filled
-    → Guest sees answer
-    → "Yes, resolved" → resolveCase (Apex)
-    → Case_Resolved__e published
-    → CaseResolvedTrigger → Status=Closed, Resolution__c=Description
-    → Case_Resolution_Email_RTF → email to SuppliedEmail
+    â†’ createSupportCase (Apex)
+    â†’ Case created (Origin=Web)
+    â†’ Case_Resolution_RTF flow â†’ GPTfy AI â†’ Description filled
+    â†’ Guest sees answer
+    â†’ "Yes, resolved" â†’ resolveCase (Apex)
+    â†’ Case_Resolved__e published
+    â†’ CaseResolvedTrigger â†’ Status=Closed, Resolution__c=Description
+    â†’ Case_Resolution_Email_RTF â†’ email to SuppliedEmail
 ```
 
-### Agent resolve → KB draft
+### Agent resolve â†’ KB draft
 
 ```
 Agent clicks Resolve (Quick Action)
-    → caseResolveAction LWC modal
-    → saveResolution (Apex)
-    → Resolution__c saved, Status=Closed
-    → Draft Knowledge article created/updated + linked to Case
-    → Case_Resolution_Email_RTF (if SuppliedEmail present)
+    â†’ caseResolveAction LWC modal
+    â†’ saveResolution (Apex)
+    â†’ Resolution__c saved, Status=Closed
+    â†’ Draft Knowledge article created/updated + linked to Case
+    â†’ Case_Resolution_Email_RTF (if SuppliedEmail present)
 ```
 
 ---
@@ -233,7 +233,7 @@ Test records use marker `cursor-test-{timestamp}` in Subject for easy cleanup.
 
 | Limitation | Notes |
 |------------|-------|
-| `Resolution__c` is Html field | Quotes may store as `&quot;` — email flow decodes them |
+| `Resolution__c` is Html field | Quotes may store as `&quot;` â€” email flow decodes them |
 | Email sender uses substitute address | Until DKIM verified for `cloudcompliance.app` |
 | `Case_Resolution_RTF` may be Draft in org | Needs activation + prompt verification |
 | Resolve button page wiring | Manual one-time Setup step |
@@ -259,7 +259,7 @@ See `POC_CHECKLIST.md` for full checklist. High-priority items:
 
 | Item | Value |
 |------|-------|
-| Remote | `origin` → https://github.com/K7-CC/GPTFY-POC1.git |
+| Remote | `origin` â†’ https://github.com/K7-CC/GPTFY-POC1.git |
 | Default branch | `main` |
 | Checkpoint **Part 1** | Tag `Part-1` on commit `15e9bcb` |
 
@@ -276,16 +276,17 @@ git checkout Part-1
 <!-- CHANGELOG_START -->
 | Date | Commit | Tag | Summary |
 |------|--------|-----|---------|
-| 2026-06-03 | `15e9bcb` | Part-1 | Initial commit: GPTfy POC1 Salesforce project — portal, agent resolve, resolution email flow, org verification scripts |
+| 2026-06-03 | `ae3cde5` | - | docs: add living PRD with auto-updated changelog |
+| 2026-06-03 | `15e9bcb` | Part-1 | Initial commit: GPTfy POC1 Salesforce project |
 <!-- CHANGELOG_END -->
 
 ---
 
 ## 12. Part history (milestones)
 
-### Part 1 — Working baseline (2026-06-03)
+### Part 1 â€” Working baseline (2026-06-03)
 
-**Tag:** `Part-1` · **Commit:** `15e9bcb`
+**Tag:** `Part-1` Â· **Commit:** `15e9bcb`
 
 **Delivered:**
 - Guest portal LWC + Apex + platform event close path
@@ -306,20 +307,20 @@ git checkout Part-1
 
 When the project is complete, use any of these options:
 
-### Option A — VS Code / Cursor (easiest)
+### Option A â€” VS Code / Cursor (easiest)
 
 1. Open `docs/PRD.md` in the editor.
 2. Install extension **Markdown PDF** (yzane.markdown-pdf) if not installed.
-3. Right-click the file → **Markdown PDF: Export (pdf)**.
+3. Right-click the file â†’ **Markdown PDF: Export (pdf)**.
 4. Save as `docs/PRD-GPTfy-POC1-Final.pdf`.
 
-### Option B — GitHub (no install)
+### Option B â€” GitHub (no install)
 
 1. Push latest `docs/PRD.md` to GitHub.
-2. Open the file on github.com → it renders as formatted HTML.
-3. Browser **Print** → **Save as PDF**.
+2. Open the file on github.com â†’ it renders as formatted HTML.
+3. Browser **Print** â†’ **Save as PDF**.
 
-### Option C — Pandoc (command line)
+### Option C â€” Pandoc (command line)
 
 ```powershell
 pandoc docs/PRD.md -o docs/PRD-GPTfy-POC1-Final.pdf --pdf-engine=wkhtmltopdf

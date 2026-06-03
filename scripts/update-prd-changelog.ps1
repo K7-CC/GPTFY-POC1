@@ -11,7 +11,7 @@ if (-not (Test-Path $prdPath)) {
 
 Push-Location $root
 
-$rows = @()
+$rows = New-Object System.Collections.Generic.List[string]
 $log = git log --pretty=format:"%h|%ad|%s" --date=short 2>$null
 if ($log) {
     foreach ($line in ($log -split "`n")) {
@@ -22,21 +22,25 @@ if ($log) {
         $msg = $parts[2] -replace '\|', ' '
 
         $tags = git tag --points-at $hash 2>$null
-        $tagStr = if ($tags) { ($tags -split "`n") -join ", " } else { "—" }
+        $tagStr = "-"
+        if ($tags) {
+            $tagStr = ($tags -split "`n") -join ", "
+        }
 
-        $rows += "| $date | ``$hash`` | $tagStr | $msg |"
+        $row = '| {0} | `{1}` | {2} | {3} |' -f $date, $hash, $tagStr, $msg
+        $rows.Add($row) | Out-Null
     }
 }
 
 if ($rows.Count -eq 0) {
-    $rows = @("| — | — | — | No commits yet |")
+    $rows.Add("| - | - | - | No commits yet |") | Out-Null
 }
 
-$table = @(
+$tableLines = @(
     "| Date | Commit | Tag | Summary |",
-    "|------|--------|-----|---------|",
-    $rows
-) -join "`n"
+    "|------|--------|-----|---------|"
+) + $rows
+$table = $tableLines -join "`n"
 
 $content = Get-Content $prdPath -Raw
 $pattern = '(?s)<!-- CHANGELOG_START -->.*?<!-- CHANGELOG_END -->'
@@ -48,7 +52,6 @@ if ($content -notmatch '<!-- CHANGELOG_START -->') {
 
 $newContent = [regex]::Replace($content, $pattern, $replacement)
 
-# Update "Last updated" date
 $today = Get-Date -Format "yyyy-MM-dd"
 $newContent = $newContent -replace '\*\*Last updated\*\* \| .* \|', "**Last updated** | $today |"
 
