@@ -1,13 +1,25 @@
 :host {
-    display: block;
+    display: block !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background-color: #2c5282 !important;
+    box-sizing: border-box !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial, sans-serif;
     color: #1a202c;
 }
 
+/* Full-page backdrop grows with long recommendation content */
+.cra-page {
+    background: #2c5282;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
+
 .cra-container {
     max-width: 720px;
-    margin: 2rem auto;
+    margin: 0 auto;
     padding: 2rem;
     background: #ffffff;
     border-radius: 12px;
@@ -207,6 +219,10 @@
     border-radius: 4px;
     margin-bottom: 1rem;
 }
+.cra-badge--neutral {
+    background: #edf2f7;
+    color: #4a5568;
+}
 .cra-card {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -234,9 +250,42 @@
 
 .cra-success,
 .cra-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 2.5rem 2rem;
 }
+
+.cra-success .cra-title,
+.cra-info .cra-title {
+    margin-bottom: 0.75rem;
+}
+
+.cra-success .cra-subtitle,
+.cra-info .cra-subtitle {
+    margin: 0;
+    max-width: 32rem;
+}
+
+.cra-spacer {
+    display: block !important;
+    flex-shrink: 0 !important;
+}
+
+.cra-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.cra-success .cra-button,
+.cra-info .cra-button {
+    display: inline-block;
+    min-width: 14rem;
+    margin: 0;
+}
+
 .cra-success-icon {
     width: 64px;
     height: 64px;
@@ -247,7 +296,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1rem;
+    margin: 0 auto 1.25rem;
     line-height: 1;
     font-weight: 700;
 }
@@ -256,8 +305,10 @@
 }
 
 @media (max-width: 600px) {
+    .cra-page {
+        padding: 1rem;
+    }
     .cra-container {
-        margin: 1rem;
         padding: 1.5rem;
     }
     .cra-row {

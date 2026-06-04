@@ -14,9 +14,15 @@ const STATE = {
 };
 
 const POLL_INTERVAL_MS = 2500;
-const MAX_POLL_ATTEMPTS = 12;
-const FALLBACK_MESSAGE =
-    "We're still working on finding the best answer for you. A support agent will follow up shortly.";
+const MAX_POLL_ATTEMPTS = 36;
+// Keep in sync with CaseResolutionController
+const NO_ANSWER_MESSAGE =
+    'Thank you for your question. We could not find a specific answer in our knowledge base at this time. ' +
+    'Our support team will review your case and follow up with you shortly.';
+const TIMEOUT_MESSAGE =
+    'Thank you for your patience. We are still processing your question. ' +
+    'Our support team has your case and will follow up with you shortly.';
+const FALLBACK_MESSAGES = new Set([NO_ANSWER_MESSAGE, TIMEOUT_MESSAGE]);
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BASE_INPUT_CLASS = 'cra-input';
@@ -39,6 +45,7 @@ export default class CaseResolutionAssistant extends LightningElement {
     productOptions = [];
 
     recommendation = '';
+    recommendationIsFallback = false;
     caseId = null;
     caseNumber = '';
     errorMessage = '';
@@ -51,6 +58,22 @@ export default class CaseResolutionAssistant extends LightningElement {
         if (data) {
             this.productOptions = data;
         }
+    }
+
+    connectedCallback() {
+        this.applyHostChrome();
+    }
+
+    renderedCallback() {
+        this.applyHostChrome();
+    }
+
+    applyHostChrome() {
+        this.style.display = 'block';
+        this.style.width = '100%';
+        this.style.minHeight = '100vh';
+        this.style.backgroundColor = '#2c5282';
+        this.style.boxSizing = 'border-box';
     }
 
     handleFirstNameChange(event) {
@@ -166,6 +189,19 @@ export default class CaseResolutionAssistant extends LightningElement {
     get recommendationClass() {
         return this.classFor(STATE.RECOMMENDATION);
     }
+    get recommendationBadge() {
+        return this.recommendationIsFallback
+            ? 'WE\'LL FOLLOW UP'
+            : 'KNOWLEDGE ARTICLE FOUND';
+    }
+    get recommendationBadgeClass() {
+        return this.recommendationIsFallback
+            ? 'cra-badge cra-badge--neutral'
+            : 'cra-badge';
+    }
+    get recommendationTitle() {
+        return this.recommendationIsFallback ? 'Next Steps' : 'Recommended Solution';
+    }
     get resolvingClass() {
         return this.classFor(STATE.RESOLVING);
     }
@@ -227,6 +263,7 @@ export default class CaseResolutionAssistant extends LightningElement {
             const description = await getRecommendation({ caseId: this.caseId });
             if (description) {
                 this.recommendation = description;
+                this.recommendationIsFallback = FALLBACK_MESSAGES.has(description);
                 this.currentState = STATE.RECOMMENDATION;
                 return;
             }
@@ -235,7 +272,8 @@ export default class CaseResolutionAssistant extends LightningElement {
         }
 
         if (this.pollAttempts >= MAX_POLL_ATTEMPTS) {
-            this.recommendation = FALLBACK_MESSAGE;
+            this.recommendation = TIMEOUT_MESSAGE;
+            this.recommendationIsFallback = true;
             this.currentState = STATE.RECOMMENDATION;
             return;
         }
@@ -270,6 +308,7 @@ export default class CaseResolutionAssistant extends LightningElement {
         this.emailError = '';
         this.questionError = '';
         this.recommendation = '';
+        this.recommendationIsFallback = false;
         this.caseId = null;
         this.caseNumber = '';
         this.errorMessage = '';

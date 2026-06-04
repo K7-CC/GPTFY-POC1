@@ -1,0 +1,2624 @@
+﻿answer,question
+"This article will help you troubleshoot invoices that appear to be missing from the portal after retrieval from Krajowy System e-Faktur (KSeF).
+It explains the most common causes of missing invoices, the verification steps to perform, and the information required for Technical Support to investigate the issue efficiently.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Preliminary troubleshooting for missing invoices (No KSeF portal access required)
+When a supplier reports that an invoice is missing, the first step is to perform basic verification checks directly with the supplier. Most of the supplier's direct AP contacts might not have direct access to the KSeF portal. These first troubleshooting steps will cover this situation.
+Look for a KSeF Number:
+A successfully cleared invoice in KSeF receives a unique KSeF Number.
+A KSeF Number would look like this: 1234567890-20260101-1A2345B00001-12
+If the supplier cannot provide a KSeF Number, there is a high chance the invoice was not successfully cleared in KSeF. Without successful clearance, the invoice cannot be retrieved through the KSeF API.
+Verify the exact Invoice Number
+:
+In Poland, suppliers can use special characters and formatting. Checking for an invoice will require the exact same number. Even a small mismatch may prevent you from finding a document correctly.
+Please verify the invoice number character-by-character, including:
+Dashes (-) vs underscores (_) vs slash (/).
+Leading zeros such as 00123456 (If you receive document numbers via Excel, it is possible that Excel automatically removes leading zeros depending on the cell formatting).
+Extra spaces.
+Prefixes or suffixes.
+Date-based document numbers such as 01/04/2026 (If you receive document numbers via Excel, it is possible that Excel automatically transforms the date into a number value like 46113 that represents 01/04/2026).
+Verify the Receiver Tax ID
+:
+Please confirm the supplier used the correct buyer Tax ID when submitting the invoice to KSeF. Common issues include:
+Incorrect Tax ID.
+Wrong country code or country prefix.
+Invoice submitted for another legal entity.
+If the invoice was submitted with the wrong receiver Tax ID, the document may be assigned to another entity in KSeF and cannot be retrieved for the intended buyer account.
+
+Step 2:
+Direct troubleshooting for missing invoices with the KSeF portal
+If the invoice is still missing after the initial verification, the next step is to investigate directly through the KSeF portal.
+Verify the invoice exists in KSeF
+:
+KSeF portal can be accessed from here:
+https://ap.ksef.mf.gov.pl/web/login
+. If you are unable to log in, please contact KSeF support via:
+https://ksef.podatki.gov.pl/kontakt-zadzwon-lub-napisz/
+.
+Confirm whether the invoice is visible directly in the KSeF portal. You can access documents from the ""Lista faktur"" menu. Make sure to navigate the different tabs and filter options for an easier search.
+If the invoice is not visible there, possible causes include:
+The invoice was not successfully cleared.
+The invoice was rejected by KSeF.
+The wrong buyer Tax ID was used.
+The document was assigned to another entity.
+The invoice number is different.
+Reconcile the KSeF Portal against received documents:
+Compare the invoices visible in the KSeF portal against the invoices received on the platform.
+Please verify again for possible mismatches, including:
+Invoice number formatting differences, missing characters, leading zeros.
+Tax ID inconsistencies.
+Date mismatches.
+Download the KSeF PDF and FA(3) XML
+:
+If the invoice is visible in the KSeF portal, download:
+The KSeF PDF.
+The FA(3) XML file.
+These documents are essential for troubleshooting because they contain the technical information required to validate:
+Exact invoice number formatting.
+Supplier and buyer Tax IDs.
+KSeF registration details.
+Submission metadata.
+Retrieval eligibility.
+To download the KSeF PDF and KSeF FA(3) XML file:
+1. When opening the KSeF link or scanning the KSeF QR code, select the button Przejd do pobierania (Go to Download)
+2. Then fill the following fields:
+a. Invoice numbers.
+b. Buyer Tax ID (You may have to try different combinations between NIP and Number VAT-UE depending on the invoice. Depending on the selection, the Buyer Tax ID would be with or without country prefix code).
+c. Total amount due.
+3. Click on Weryfikuj dane (Verify data)
+4. If everything was entered correctly, you will get a confirmation message. You can select the down arrow to download the KSeF PDF and KSeF FA(3) XML separately.
+If you receive an error, you may try again using different values above, based on the KSeF portal table or the PDF received from the supplier.
+
+Step 3:
+Escalating to Tungsten Automation Technical Support
+If the invoice is still missing after all verification steps, please contact the Technical Support with the required information below.
+Mandatory information to provide
+:
+Receiver Tax ID.
+Invoice Number (exact match).
+KSeF Number.
+KSeF Date.
+KSeF PDF.
+KSeF FA(3) XML file.
+Any error messages received (if applicable).
+Important
+: Providing only an invoice number or only a KSeF Number is not sufficient. If the required information are not provided, our Technical Support team will not be able to perform a complete investigation. We do not have the possibility to connect to the customer KSeF portal.
+Bulk investigations
+:
+If multiple invoices are missing (for example 20, 50, or 100+ documents), you may initially provide an Excel file instead of individual files. This is acceptable as in this scenario, retrieving a second time these documents from a specific date should fix almost all documents.
+The Excel file should contain at minimum:
+Invoice Number (exact match).
+KSeF Number.
+KSeF Date.
+Receiver Tax ID (This is particularly important if you have multiple accounts/entities).
+Technical Support may still request KSeF PDFs or FA(3) XML files later for unresolved documents.
+Why the above information is required
+:
+Our platform does not connect to KSeF as a buyer through the government portal.
+Invoice retrieval is performed exclusively through the KSeF API, which has technical limitations and does not provide direct reconciliation or full document search capabilities.
+As we can't connect to the government portal directly on customer accounts, we can't reconcile the documents available there with the KSeF API results. The reconciliation is expected to be completed on the customer side.
+The information above is therefore required to:
+Validate the invoice correctly.
+Confirm retrieval eligibility.
+Retry retrieval attempts when possible.
+Investigate supplier-side inconsistencies.
+Escalate to integration partners when necessary.
+The more complete the information provided, the faster and more accurately Technical Support can investigate the issue.",Tungsten e-Invoice Connect (TeC) - Troubleshooting Missing Invoices Retrieved from KSeF
+"In this article, we will discuss our process in place for any items related to product development.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+Whenever you encounter a bug on the portal or request a new functionality, the development process will follow a similar path. When Technical Support receives an enhancement request or a bug report, our team first verifies it. If development is required, we will raise an internal product change/development request. Once raised, you will receive confirmation from Technical Support, and the support case will be assigned to Development (status In Development).
+What happens next?
+Enhancement requests and bug fixes are periodically reviewed by Product Management for possible inclusion in a future major release. Whether they are included, as well as their prioritization and timing, is determined by market needs and the functional or development complexity involved.
+Because of this, our Technical Support team may not be able to provide an ETA for your request. Some major changes are announced directly by our Product team on the e-Invoice Connect Product page here:
+https://docshield.tungstenautomation.com/eInvoiceConnect/en_US/help/RN/eInvoiceConnect_releasenotes/c_whatsnew.html
+Resolved issues are also documented in a separate page. When applicable, our Technical Support team may share a bug ID, which can be searched directly here:
+https://docshield.tungstenautomation.com/eInvoiceConnect/en_US/help/RN/eInvoiceConnect_releasenotes/c_resolvedissues.html
+However, not all released items are published there, so the best approach is to check the portal regularly for updates.
+Please note that the above do not include major incidents or outages. If such a scenario happens, our Service Status page will be updated:
+https://status.tungstencloud.com/europe
+You can subscribe to receive direct email notification from the top button ""
+SUBSCRIBE TO UPDATES
+"". Add your email address and select our Tungsten Automation products.",Tungsten e-Invoice Connect (TeC) - Enhancement Requests & Bug Fixes - Product Development Process
+"With Tungsten e-Invoice Connect, it is possible to send and receive invoices directly with a data file. We support many globally recognized formats.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Membership level
+Based on your membership level, we can offer different integration options with your invoicing system.
+Basic:
+Integration with selected systems. Supports standard formats such as PEPPOL BIS and other public formats. Personalized configuration is not available at this membership level. The structure of our public formats must be strictly followed.
+Plus / Premium:
+Full integration with any system is available. This solution allows you to continue creating e-invoices in the file format your internal system currently exports, as long as it is consistent and contains all mandatory data elements.
+The TeC technical team will create a custom map to adapt our system to your file structure and extract the necessary content.
+
+Step 2:
+Standard format list
+If you are interested in using a standard format, we have prepared a list with some additional information available. Some of these formats might be available only for sending or receiving invoices.
+Inbound
+(source) invoice format: The format in which an invoice is sent by a supplier and received by e-Invoice Connect before transferring to the recipient (customer).
+Outbound
+(target) invoice format: The format in which an invoice is sent from e-Invoice Connect to the recipient.
+Both ways: Used both as a target and a source format.
+e-Invoice Connect converts the sender format to the recipient format using the internal Esxml2 format.
+BGC Invoice:
+Inbound only. An XML invoice standard. BGC stands for ""bank giro credit,"" referring to cash or checks paid into your bank over the counter. Invoices are sent in this format by a supplier and received by e-Invoice Connect before being forwarded to the customer.
+E2B:
+Both ways. An XML invoice standard used in Norway. Primarily intended for domestic Norwegian invoicing, with limited support for cross-border use. The format is used as both a target and source. e-Invoice Connect converts the senders format to the recipients format via the internal
+Esxml2
+format.
+Note: This format is mostly replaced by
+PEPPOL BIS Billing 3.0
+.
+Esxml2:
+Both ways. An internal format used by e-Invoice Connect and also adopted externally by some customers.
+Factur-X:
+Inbound only. A Franco-German hybrid e-invoice format (PDF for users, XML data for automation) based on the European Semantic Standard
+EN 16931
+.
+Finvoice 3:
+Both ways. A publicly available invoicing standard published by Finnish banks. Also functions as a forwarding service provided by banks and payment institutions. e-Invoice Connect supports version 3.x, in line with the requirements of the Finnish e-invoicing association.
+Used as both a source and target format via
+Esxml2
+.
+OIOUBL:
+Both ways. A Danish adaptation of the international UBL 2.0 standard from OASIS, customized for local business requirements. Used as both a source and target format. Conversion handled via
+Esxml2
+.
+OIOXML:
+Inbound only. An invoice format sent by suppliers and received by e-Invoice Connect before being forwarded to customers.
+Note:
+This format is deprecated.
+PEPPOL BIS Billing 3.0:
+Both ways. An international e-invoicing network for secure communication with companies and governments worldwide.
+See the chapter
+Integration with PEPPOL
+for more details.
+Used as both a source and target format via
+Esxml2
+.
+Pyramid:
+Inbound only. A format in which suppliers send invoices to e-Invoice Connect, which then forwards them to the recipient.
+Svefaktura:
+Both ways. An XML standard used in Sweden, based on OASIS Universal Business Language (UBL). Enables easy e-invoicing without special agreements.
+Accepted by public entities in Sweden, although
+PEPPOL BIS Billing 3.0
+is preferred.
+Several variants exist, including customer-specific versions. Converted via
+Esxml2
+.
+TEAPPSXML:
+Both ways. E-Invoice Connect supports
+TEAPPSXML 3.0
+, an XML-based standard that meets European Standard EN requirements for electronic invoicing.
+Used as both a source and target format via
+Esxml2
+.
+XRechnung 2.1:
+Both ways. The official standard for electronic invoicing in Germany. Mandatory for sending invoices to German government institutions. Applicable to all EU contractors.
+e-Invoice Connect supports commonly used features to enable both sending and receiving invoices in this format.
+ZugFERD:
+Inbound only. A German hybrid invoice format combining XML data and a traditional PDF layout. Compliant with European Standard
+EN 16931
+.",Tungsten e-Invoice Connect (TeC) - What standard invoicing file formats are supported?
+"In order to be able to send electronic invoices using Invoice Portal you first need to register your company as a member of Invoice Portal. Go to the registration page
+https://web.fakturaportalen.se/register
+. This is how the registration page looks:
+Mandatory fields are marked with a check mark. When the field is filled in the check mark changes colour. There is a question mark next to some fields, pressing this symbol will bring up an explanation of the field.
+User information
+Email address - Add an existing email address (this email address will be the user name)
+Name - Contact person's name
+Password - The password need to consist of at least 6 characters
+Organization information
+When the organization ID is filled in, the rest of the corporate information is populated automatically.
+Country The country in which the organization is registered
+Organization ID - Swedish organization number for identification of a legal entity.
+Use the Invoice Portal
+Select what to use the membership for (for instance to send invoices)
+Membership level
+There are the different levels of membership available. Select the preferred level by selecting the radio button below the list.
+Registration code
+You may have received a registration code from Kofax or one of our partners, enter it in this field.
+Finalize the registration
+Terms and conditions for the membership is available in the hyper link (
+https://web.fakturaportalen.se/terms.pdf
+). Study them carefully and when you are satisfied, press ""
+Done
+"".
+The membership registration is now done.
+After membership registration
+When your company is registered an activation email will be sent to the email address used during the registration. In this email there is a link which leads to a membership activation function in Invoice Portal.
+When the new member account is activated it is possible to log in using the registered email address and the password you receive.
+Read more about Invoice Portal in the online help file:
+https://docshield.kofax.com/InvoicePortal/en_US/help/RSI_InvoicePortal_help/c_welcometoinvoiceportal.html",Become a member of the Invoice Portal
+"Welcome to the TeC Support Home! This is our central hub for help and guidance regarding Tungsten e-Invoice Connect. Explore our full collection of support articles, organized by category for easy browsing.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+VIEW ALL ARTICLES
+Getting Started 
+Most Popular 
+How to create a company account?
+How can I set manage my Multi-Factor Authentication (MFA)?
+How can I send and receive my invoices via FTP or SFTP?
+How to add or change a customer in the interoperability registry from TeC?
+How to add a new user to your company account?
+How can my customers receive my invoices outside TeC via their own VAN Operators?
+How to change my membership level or upgrade it?
+Poland - How to generate a KSeF Token?
+What standard invoicing file formats are supported?
+How to contact TeC Technical Support?
+Error Troubleshooting
+PEPPOL Guidance
+Country Guidance
+Electronic recipient could not be identified and a printing service is not used.
+How to check Peppol Customer Registration?
+How to add our company to Sweden's registry (NEA)?
+At least 1 supported means of payment must be provided.
+How to add our company to Peppol registry?
+How to add our company to Denmark's registry (NemHandel)?
+The number of decimals for Quantity/Price/Unit price basis value (123) on line 123 exceeds the maximum allowed (123).
+How to Change or Delete an existing record from a Registry or PEPPOL?
+How to add our company to Finland's registry (TIEKE)?",Tungsten e-Invoice Connect (TeC) - Technical Support Knowledge Base
+"In this article, we will cover our official channels to contact Tungsten e-Invoice Connect (TeC) Technical Support.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+Table of contents:
+Guide 1: Self-Assistance Documentation
+Guide 2: Contact our Technical Support team
+ Guide 1: Self-Assistance Documentation
+
+Step 1:
+Opening help resources
+From the portal, you can access our online documentation. Depending on your membership level, you might also have a contact form available (described below).
+Open our portal via
+https://web.fakturaportalen.se/
+Log in using your
+Email
+and
+Password
+.
+From the top menu, select ""
+Support
+"" - ""
+Request
+""
+
+Step 2:
+Our help resources available
+On the page, the following links will be available:
+Docshield
+: User manual covering many topics by our Product team.
+Knowledge Base
+: Articles created by our Technical Support team, based on requests received from our customers.
+Status Monitoring
+: Allows you to monitor in real time the status of our services. You can subscribe to receive an alert in case of service disruption.
+Administrator's Guide
+: A complete guide for administrators.
+Learning Courses
+: Interactive courses prepared by our Learning Cloud team.
+ Guide 2: Contact our Technical Support team
+
+Step 1:
+Eligibility to contact our Technical Support
+ Important
+: Some services offered by Tungsten Automation are exclusively available to high-tier customers.
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships
+. Customers with a Free or Basic membership are not eligible for direct Technical Support and are encouraged to use the available self-service resources instead. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly for assistance.
+To verify if you are eligible to contact our Technical Support team, you can navigate from the top menu. Select ""
+Support
+"" - ""
+Request
+"".
+If you can see the section ""
+Still did not find an answer?
+"", and a contact form is available under it, then you are eligible to contact our Technical Support team. If you can't see any contact form, you have the possibility to upgrade your membership level to Plus or Premium with this menu:
+Upgrade my membership level
+.
+
+Step 2:
+Using our support contact form
+Directly from the TeC Portal, our contact form allows you to reach out to our Technical Support. When reaching the technical support, the following information will be expected:
+A detailed description of the issue/request
+Time of the issue (started/noticed)
+Steps to reproduce (if applicable)
+Screenshots of the issue (if applicable)
+Account Impacted (Company Name or Member ID) & User Impacted (Email)
+If requesting a new Recipient to be added into a registry, we will expect Company name, Company Identifiers, VAN Operator name, and Contact Person (Name, Phone, Email).
+Any additional information that could make the investigation more efficient
+Attachments can be added at a later stage, directly by replying in the confirmation email received by our system.
+Enterprise customers with the web access to Tungsten Automation Support may also view the already-existing cases here:
+Log in to the Customer Portal
+- this link is for customers who already have a Customer Portal Account.
+Log in to the Partner Portal
+- this link is for Tungsten Automation Partners who already have a Partner Portal Account.",Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?
+"For assistance with Invoice Portal, please review the resources below:
+Help Files
+for Invoice Portal users
+Join the Kofax Community
+to ask questions, chat to other Invoice Portal members and the Kofax team
+Live up-time status
+real-time information about Invoice Portal operational status
+Still did not find an answer?
+Kofax provides support for directly sold customers with Plus and Premium member level. If you purchased via a Partner, please contact your partner. For assistance with a specific Kofax Invoice Portal question, please use the in-tool Support-Request functionality. Make sure you tell us as much as you can about the issue/query:
+A detailed description of your problem
+The text of any error message you received
+Invoice number of the affected invoice
+Invoice date
+Invoice recipient (outgoing) or invoice sender (incoming)
+Additional Resources for Enterprise Customers:
+Enterprise customers with existing web access to Kofax Support may also review existing cases here:
+Log in to the Customer Portal
+- This link is for customers who already have a Customer Portal Account.
+Log in to the Partner Portal
+- This link is for Kofax Partners who already have a Partner Portal Account.",Getting Help with Invoice Portal
+"For assistance with e-Invoice Connect (Invoice Portal), see the following resources:
+Help Files
+for Invoice Portal users
+e-Invoice Connect (Invoice Portal)
+:
+additional help can be found in the
+Tungsten Automation
+Knowledge Base. More information about the Knowledge Portal is below.
+Join the Tungsten Automation Community
+to find answers to support questions, ask your own questions, chat with other e-Invoice Connect (Invoice Portal) users, and chat with the
+Tungsten Automation
+Team. For more information about the Tungsten Automation Community, please see below.
+Live up-time status
+gives real-time information about the e-Invoice Connect (Invoice Portal) status
+Still did not find an answer?
+Tungsten Automation
+provides support for directly sold customers with Plus and Premium member levels. If you purchased e-Invoice Connect (Invoice Portal) from a Partner, please contact your Partner.
+The support form is accessible directly from inside the e-Invoice Connect (Invoice Portal) application, Support > Request.
+Additional Resources for Enterprise Customers
+Enterprise customers with web access to
+Tungsten Automation
+Support may also view the already-existing cases here:
+Log in to the Customer Portal
+- this link is for customers who already have a Customer Portal Account
+Log in to the Partner Portal
+- this link is for
+Tungsten Automation
+Partners who already have a Partner Portal Account
+More information about the
+Tungsten Automation
+Community
+A wealth of information can be found in the Tungsten Automation Community, where our users ask and answer questions, and share insights about e-Invoice Connect (Invoice Portal).
+Tungsten Automation Technical Support
+is represented and monitors the Community to ensure that questions are addressed.
+To participate in the Community, you first have to join - this is done by filling in the self-service form here:
+Self Register
+Looking forward to seeing you in the Community!
+More information about the
+Tungsten Automation
+Knowledge Portal
+The
+Tungsten Automation Knowledge Portal
+is more than meets the eye. We recommend using the search function to find topics related to your query.",e-Invoice Connect (Invoice Portal) - Getting help and access to resources
+"Please go to:
+https://www.tungstenautomation.de/contact-us/product-inquiry
+And raise your questions directly to our products teams.",I have questions regarding a software demo or general questions regarding product features
+"Tungsten Automation Partners and Customers (all products and solutions).
+We experienced network issues affecting some of our internal IT systems. We have successfully restored functionality to all core systems.
+If you encounter any licensing issues going forward, please
+open a Critical Case
+with Tungsten Automation Technical Support via the
+Tungsten Automation Customer Portal
+. Partners should register issues through the
+Tungsten Automation Partner Portal
+. We will make every effort to provide new activation codes within the same business day.",License Activation Server and Software Download Disruption
+"Question / Problem:
+How to reopen a closed Support Case?
+Answer / Solution:
+Support Cases are closed sometimes automatically by the Support Portal Software. This happens if, after a certain period, no feedback is received from our customer. Closed Cases can be reopened 14 days after that they have been closed. If the Case is older then 14 days, you will have to open a new Case. You can refer to the old Case by the old Case Number.
+To reopen a closed Case, you need to login to your Kofax Support Account and click on Cases and then on My Cases.
+Here choose ""My Closed Cases"" from the menu on the left hand side.
+Search for the closed Case in question and click on the Case Number. The closed Case will be shown. Click on ""Re-open closed Case"" to reopen the closed case.",How to reopen a closed Support Case
+"Customizations, even if delivered by Tungsten Automation Professional Services, are not part of standard Tungsten Automation support. If you are looking to modify a customization, or if you encounter a problem with an existing customization, and you require Tungsten Automation assistance to address it, you would need to contact Tungsten Automation Professional Services to request an engagement.
+Tungsten Automation Technical Support would be unable to comment on or assist with customization related issues.
+Details on Tungsten Automation Professional Services and how to contact them are available here:
+https://www.TungstenAutomation.com/professional-services
+or via email at:
+PSBusinessDevelopment@TungstenAutomation.com
+Level of Complexity
+Easy","Customizations: Adding, Updating, Troubleshooting and how to contact Professional Services"
+"An Enhancement Request has been logged.
+What is the general process for Enhancement Requests?
+Is there a timeline associated with an enhancement?
+Product Management periodically evaluates Enhancement Requests for
+possible
+inclusion in a future major release.
+Their possible inclusion (or not), prioritization, and timing are determined by market needs and the functional/development level of complexity.
+Enhancements that are completed will be noted in the Release Notes of major releases or service packs, which will be available in the relevant Product documentation set available
+here
+.
+For details on how to receive notifications about releases and updates, refer to the
+Release Announcements
+article, which outlines how this can be achieved via the
+Community
+, and bookmark it as explained in the ""
+Follow or bookmark a discussion
+"" section.",Enhancement Requests
+"You can find technical specification documentation for Tungsten Automation products centralized under the
+https://docshield.tungstenautomation.com/
+site.
+Level of Complexity
+Easy",Technical Specification Documents for Tungsten Automation products
+"For details on the services and solutions that Tungsten Automation Professional Services offer, click on the following link:
+Professional Services and Consulting
+To contact Tungsten Automation Professional Services for inquiries, orders, or information, please email:
+PSBusinessDevelopment@tungstenautomation.com
+Or alternatively, you can reach out directly to your
+Tungsten Automation Account Executive.
+For
+Tungsten Automation Partners:
+Contact your Account Executive (Sales) or your Alliance Manager (
+Tungsten Automation Partner organization
+).
+See Also:
+Requesting assistance for a product upgrade, migration, or a new installation, and how to contact Professional Services
+What to do when there is a problem with a customization, or I want to add or update a customization, and how to contact Professional Services",How to contact Tungsten Automation Professional Services
+"New installations, system modifications, migrations and upgrades are not covered by the Tungsten Automation support maintenance contract. However, our Professional Services can be engaged to provide assistance in planning and executing such a project.
+Details on Tungsten Automation Professional Services and how to contact them are available here:
+https://www.tungstenautomation.com/professional-services
+or via email at:
+PSBusinessDevelopment@tungstenautomation.com
+Level of Complexity
+Easy","Requesting assistance for a product upgrade, migration or a new installation, and how to contact Professional Services"
+"You can check the
+Product Release and Sunset Schedules
+for more information about release, limited and end of support for Tungsten Automation products.
+Level of Complexity
+Easy",Product Release and Sunset Schedules
+"Please navigate to Sales Support contact page for quoting, pricing, orders, and non-technical inquiries:
+Sales Support",Sales Support
+"Information:
+See the link below for FAQ regarding Kofax's rebranding to Tungsten Automation.
+https://www.tungstenautomation.com/faq
+If you still require assistance regarding billing, taxes (W9), name change, or invoicing, please send an email to
+ar.ams@tungstenautomation.com",Rebranding Kofax to Tungsten Automation FAQ
+"A KSeF token is a secure authorization key that defines who is allowed to access and perform actions in the Polish National e-Invoicing System (KSeF) on behalf of a company, such as submitting, viewing, or downloading invoices.
+Tungsten Automation requires this token so we can legally submit invoices to KSeF on your behalf, instead of you having to do it manually. The token grants only the permissions you explicitly approve and can be revoked at any time.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+Official documentation:
+The Polish Ministry of Finance has published an
+extensive official guide
+.
+Chapter 2.4
+specifically covers the KSeF Token topic:
+https://ksef.podatki.gov.pl/media/jzrevse3/podrecznik-ksef-20-cz-i-rozpoczecie-korzystania-z-ksef-20260209.pdf
+An official
+video guide
+is also available:
+https://www.youtube.com/watch?v=k-ptf9f3JhM
+For any issues related to KSeF tokens, the
+KSeF support team
+can be contacted by phone, email, or chat via:
+https://ksef.podatki.gov.pl/kontakt-zadzwon-lub-napisz/
+For your convenience, Tungsten Automation prepared a simplified version below.
+Note
+: At the time of writing, the KSeF portal is available only in Polish. The wording below may not exactly match your browsers automatic translation.
+Step 1: Log in to KSeF
+Go to:
+https://ap.ksef.mf.gov.pl/web/login
+Complete the login process using your chosen authentication method (e.g. Trusted Profile, qualified signature, etc.).
+If you are unable to log in, please contact KSeF support via:
+https://ksef.podatki.gov.pl/kontakt-zadzwon-lub-napisz/
+Step 2: Generate the token
+Once logged in, follow these steps:
+From the left-hand menu, select 
+Tokens
+ (
+Tokeny
+)
+Click 
+Generate token
+ (
+Generuj Token
+)
+Add a
+token name
+(
+Nazwa tokena
+) in the textbox, e.g. Token for Tungsten Automation
+Select the
+permissions
+. We recommend marking all boxes. However, if you wish, you can grant specific permissions.
+If when submitting an invoice with Tungsten Automation, you receive an error Invalid Token, please ensure that you granted permissions as below image.
+Select the button 
+Generate token
+ (
+Generuj Token
+).
+Step 3: Wait for the token generation
+Token generation is usually almost instant. However, it is possible to take a few minutes. You must keep the page open. You can press the link 
+Refresh
+ (
+Odwie
+) to regularly check the result.
+Step 4: Save the token
+After the refresh, if successful, you should get confirmation that the token was generated.
+You must copy the token at this step. On the right of the token, select the icon 
+Copy
+ (
+Kopiuj
+).
+Note: If you closed that page too past, you will need to delete the token and create a new one.",Tungsten e-Invoice Connect (TeC) - Poland - How to generate a KSeF Token?
+"Tungsten Automation takes data protection seriously, ensuring that our products have robust security, are compliant and we have privacy programs in place.
+Tungsten Automation has achieved the following certifications and attestations:
+SOC2
+SOC3
+ISO/IEC 27001
+PEN Test Results
+These reports are available to our customers and partners once an NDA is signed.
+If you require any of these reports, please fill out this
+NDA (click to download)
+and raise a support case attaching the signed NDA and request the reports that you would like to receive.","Requests for SOC, PEN or ISO27001 Reports"
+"In this article, we will review the TeC error: ""At least 1 supported identifier(s) must be provided for Supplier."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+At least 1 supported identifier(s) must be provided for Supplier.
+"".
+This error means that the invoice cannot be processed because the supplier has not provided any supported identifiers accepted by the recipient. It is possible that the supplier provided an identifier, but not part of the approved ones by the recipient. The recipient would have to communicate their expectations to suppliers regarding accepted supplier IDs. Suppliers would be recommended to provide as many ID types as possible.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+There are many available identifier types. The recipient of your invoice should communicate with you about which ones are accepted. You can add them from the menu ""
+Settings
+"" ""
+Member account
+"". Then, in the part ""
+Party identifiers
+"", add a line by selecting a country, the needed ID type (approved by your client), and the identifier. Press the button ""
+Add
+"". Finally, at the bottom, press the button ""
+Save
+"".
+If you are using integration, meaning sending a data file to generate an invoice, verify that you are providing a supplier ID in a proper mapping format, added the proper tags/segments or entered a proper schemeID.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate the identifier requirements clearly to your suppliers to ensure compliance. You should precise the exact type of supplier IDs that you are expecting from them.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: At least 1 supported identifier(s) must be provided for Supplier.
+"In this article, we will review the TeC error: ""At least 1 supported means of payment must be provided.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+At least 1 supported means of payment must be provided.
+"".
+This error means that the invoice or transaction lacks a valid payment method. The system requires at least one supported payment method (Bank number, IBAN, etc.) to proceed.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+):
+Review the invoice data and ensure a valid payment method is included. You can add one from the menu ""
+Settings
+"" ""
+Sending
+"". In the section ""
+Payment method""
+, add the desired payment type. If you are unsure, contact the recipient and ask for details.
+Verify that you are providing the correct value and format in the intended field. For example, providing a BIC code intended for IBAN will not pass the validation. This could happen by providing local payment methods on international methods like IBAN.
+If you are a customer (receiving the invoice)
+: You have two options:
+Contact the sender (supplier) if the invoice was received without payment details. They should correct their invoice document and resend it.
+You can accept the document in its current state, without the payment method. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can press the button ""Accept"" to receive it.",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: At least 1 supported means of payment must be provided.
+"In this article, we will review the TeC error: "" Delivery period to cannot be before Delivery period from."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Delivery period to cannot be before Delivery period from.
+"".
+This error means that the invoice contains an invalid delivery period range. Specifically, the ""Delivery period to"" (end) date is earlier than the ""Delivery period from"" (start) date, which is not theoretically acceptable. The ""Delivery period from"" should always be before/earlier.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that the ""Delivery period from"" and ""Delivery period to"" fields are correctly filled, with the ""to"" date being the same or later than the ""from"" date.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate proper date formatting and logic requirements to your suppliers.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Delivery period to cannot be before Delivery period from.
+"In this article, we will review the TeC error: ""Line numbers must be unique."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Line numbers must be unique.
+"".
+This error occurs when two or more invoice lines share the same line number. Each line item on an invoice must have a unique line number (e.g., 1, 2, 3, ).
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure each invoice line has a unique number. Avoid repeating line numbers across rows.
+Use sequential numbering (e.g., 1, 2, 3) to maintain clarity and consistency.
+Check your invoicing system or export templates to ensure line numbers are generated correctly.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate line number requirements in your invoice submission guidelines.
+Provide feedback to suppliers when this error occurs and guide them on how to correct it.
+If you are fine with receiving invoice lines with duplicate numbers, this validation can be turned off in your recipient profile. In order to turn this validation off, you must contact our Technical Support and have an integrated account with Plus/Premium membership level:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Line numbers must be unique
+"In this article, we will review the TeC error: ""The maximum number of allowances/charges that can be defined: 123 on line 123."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+The maximum number of allowances/charges that can be defined: 123 on line 123.
+"".
+This error means that the invoice cannot be processed because the number of allowances/Charges defined on a line exceeds the limit allowed by the recipient. If the error mentions ""1 on line"", this does mean that the recipient allows only 1 allowance or special charge to be provided on the line. The supplier most likely provided more than that value. If you provide one allowance and one special charge (so one of each), it will count as two allowances/charges. This rule is decided by the recipient, and limitations can vary.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Make sure not to exceed the limit allowed by your recipient. If you are not familiar with this rule, you should contact your client to learn about their validations in place.
+If the error mentions only ""1 on line X"", this means you can provide only 1 special charge/allowance. Providing one line of each will count as two and not be possible.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate the precise requirements clearly to your suppliers to ensure compliance. You should explain to suppliers how you expect to receive any special scenario, such as transport charges or special charges in your invoices (if applicable).
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: The maximum number of allowances/charges that can be defined: 123 on line 123
+"In this article, we will review the TeC error: ""The supplier VAT registration number is missing."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+The supplier VAT registration number is missing.
+"".
+This error means that the invoice cannot be processed correctly because the supplier has not provided a VAT registration number, and the company is not marked as tax exempt.
+This can happen due to missing or incorrectly entered VAT number.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that your VAT registration number is included and correctly formatted in the invoice data. You can add them from the menu ""
+Settings
+"" ""
+Member account
+"". Then in the part ""
+Party identifiers
+"", add a line by selecting a country, type as VAT/Tax ID, and the identifier. Press the button ""
+Add
+"". Finally, at the bottom, press the button ""
+Save
+"".
+If the error still triggers, make sure on the invoice document itself, the supplier VAT/Tax ID is correctly selected. If ""None"" is selected, you must change it to the appropriate VAT/Tax ID available.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Request that suppliers include their VAT number in all invoice submissions.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: The supplier VAT registration number is missing.
+"In this article, we will review the TeC error: ""Value missing for Tax exemption text on line 123."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Tax exemption text on line 123.
+"".
+This error means that the invoice includes a tax exemption category (such as 0% VAT, Tax exempt...) but lacks the required justification text. A valid reason must be provided when a tax exemption is applied.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that the correct Tax code/category is used.
+If you use tax exemption (0% tax, Tax Exempt, Tax not applicable...), please provide a tax exemption text to justify it. If you create the invoice from our portal, you must add this text under the field ""
+Tax exemption text
+"" (select ""More details"" to display it). Using a different field will not pass the validation.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate proper formatting and requirements to your suppliers.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Tax exemption text on line 123.
+"In this article, we will review the TeC error: ""Value provided for Buyer's reference 1 ('ABC') is not a valid reference.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value provided for Buyer's reference 1 ('ABC') is not a valid reference
+"".
+This error indicates that the value entered for Buyers Reference 1. In this case, 'ABC' (or any other value visible in the error message) is not recognized or accepted by the recipients system. The recipient has a predefined list of valid references, and the provided value does not match any of them.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Do not use generic placeholders like 'n/a', 'N/A', 'none', '0', or 'unknown' unless explicitly allowed by the recipient.
+Check the recipients documentation or onboarding guide for a list of accepted buyer references.
+Contact the Customer: If you're unsure which reference to use, reach out to your customers to obtain the correct value.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Maintain a clear reference List and ensure your suppliers have access to an up-to-date list of valid buyer references. You can add or verify the allowed values from the menu ""
+Settings
+"" ""
+Receiving
+"", then the option ""
+Reference validation settings
+"".
+Include reference requirements in your supplier materials or invoice guidelines.
+If a supplier repeatedly sends invalid references, notify them of the correct value and explain the importance of using it.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value provided for Buyer's reference 1 ('ABC') is not a valid reference.
+"In this article, we will review the TeC error: ""At least 1 Supplier Organization ID expected, but 0 found."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+At least 1 Supplier Organization ID expected, but 0 found.
+"".
+This error means that the invoice cannot be processed because the suppliers organization ID is missing. The system requires at least one valid organization ID to proceed.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that your Org ID is included and correctly formatted in the invoice data. You can add them from the menu ""
+Settings
+"" ""
+Member account
+"". Then in the part ""
+Party identifiers
+"", add a line by selecting a country, type as ""
+Organization no
+"" (or similar depending on the country), and the identifier. Press the button ""
+Add
+"". Finally, at the bottom, press the button ""
+Save
+"".
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Request that suppliers include their Org ID in all invoice submissions.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".","Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: At least 1 Supplier Organization ID expected, but 0 found"
+"In this article, we will review the TeC error: ""Electronic recipient could not be identified and a printing service is not used."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Electronic recipient could not be identified and a printing service is not used.
+"".
+This error means that the invoice cannot be delivered electronically because either:
+1. The recipients electronic identifiers are missing or it is incorrect.
+2. The recipient is not yet set up for e-invoicing via interoperability in the registry, and no printing service is enabled.
+The error can be visible in the ""Sent"" menu for suppliers only. A recipient can't view the error because the correct destination couldn't be found.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Verify the recipients identifiers (Peppol ID, organization number, GLN, etc.) are correct and properly formatted.
+If the identifiers are correct but the error is still showing, submit a support ticket following this guide:
+Tungsten e-Invoice Connect (TeC) - How to add or change a customer in the interoperability registry from TeC?
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Ensure your organization is correctly setup in TeC.
+Provide accurate and up-to-date identifiers to your suppliers.",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Electronic recipient could not be identified and a printing service is not used.
+"In this article, we will review the TeC error: ""Invalid GLN."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Invalid GLN.
+"".
+This error occurs when the Global Location Number (GLN) provided in the invoice is not valid or incorrectly formatted.
+EXAMPLE: In this specific case, a GLN prefix was used, but the value provided was an organization number:
+PEPPOL 3.0: The schemeID=""0088"" indicates that a GLN is expected, but 555555555 is not a valid GLN.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Use the correct identifier type: If using schemeID=""0088"", ensure the value is a valid GLN, not an organization number.
+Verify the recipients identifier: Confirm whether the recipient expects a GLN or another type of identifier (e.g., OrgNr, VAT number).
+Consult the recipient or registry if unsure which identifier to use.
+If you don't know the GLN of your customer, and it is expected, please contact them directly to get the proper number.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Clearly communicate identifier requirements to suppliers, including whether GLN or OrgNr should be used.
+Ensure your registry entry is accurate and reflects the correct identifier type and value.
+Provide examples of valid GLNs and how they should be formatted in electronic documents.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Invalid GLN.
+"In this article, we will review the TeC error: ""Invoices of type 'Credit' are not allowed.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Invoices of type 'Credit' are not allowed.
+"".
+This error can be triggered when the recipient (customer) configuration isn't set to receive credit notes. The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify with your customer if they accept credit notes. If yes, then your customer should update their configuration (recipient profile), in order to be able to receive such documents.
+If you are a customer (receiving the invoice)
+: You have two options:
+If you receiving invoices via business system integration, you have to ensure that the recipient profile selected include the option ""Credit"". From the menu ""
+Settings
+"" ""
+Addresses
+"". Select a legal address, and then verify that the
+Recipient profile
+with option ""
+Credit
+"" is added.
+If you don't wish to receive such document types, you can reject it. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"". Accepting the invoice without the proper configuration will not allow you to receive it via business integration.",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Invoices of type 'Credit' are not allowed.
+"In this article, we will review the TeC error: ""One of due date or payment terms is missing.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+One of due date or payment terms is missing.
+"".
+This error means that the invoice is missing either a due date or a payment terms.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): Ensure that the ""
+Due date
+"" and/or ""
+Payment terms
+"" fields are correctly included and have a value. If creating the invoice from the portal, these fields are available in the section ""
+Payment details
+"".
+If you are a customer (receiving the invoice)
+: You have two options:
+Communicate proper formatting and logic requirements to your suppliers.
+You can accept the document in its current state, without the payment method. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can press the button ""Accept"" to receive it.",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: One of due date or payment terms is missing.
+"In this article, we will review the TeC error: ""Tax category 'Services outside scope of tax' not allowed on line 123."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Tax category 'Services outside scope of tax' not allowed on line 123.
+"".
+This error means that the invoice line contains a tax category that doesn't match the tax rate. For example, with the tax category ""Services outside scope of tax"", the expected tax rate will be 0%. To fix the invoice, either the tax rate or the tax category needs to be corrected. Depending on the line type (such as goods, services, special charges...), only specific tax categories will be acceptable.
+For Peppol 3.0, a validation is also in place, reflecting the same logic described above:
+https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL5305/
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Make sure that you selected the proper tax rate on your invoice. If 0% is selected, the tax amount should also be 0.
+According to your tax rate, you should also select the proper tax category. For example, the tax category ""Exempt from Tax"" must have a 0% VAT line.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Verify with your supplier the invoice details. They should be invited to either correct the tax percentage or the tax category.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Tax category 'Services outside scope of tax' not allowed on line 123.
+"In this article, we will review the TeC error: ""The number of decimals for Quantity/Price/Unit price basis value (123) on line 123 exceeds the maximum allowed (123).""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter multiple errors:
+The number of decimals for
+Price value
+(1333.3333333) on line 1 exceeds the maximum allowed (4).
+The number of decimals for
+Quantity value
+(0.083333) on line 8 exceeds the maximum allowed (3).
+The number of decimals for
+Unit price basis value
+(0.0083333333) on line 1 exceeds the maximum allowed (2).
+This error means that the invoice contains numeric values with more decimals than allowed by the recipient. The number of decimal numbers allowed can vary depending on the recipient's rules. The error message will always mention the expected value at the end. For example:
+Error message
+: The number of decimals for Price value (
+1333.3333333
+) on line 1 exceeds the maximum allowed (
+4
+).
+Expected value
+:
+1333.3333
+because 4 decimals in the maximum.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that decimal values do not exceed the allowed amount mentioned in the error message.
+Contact your recipient if you are unsure about the rules and limitations in place.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate the precise requirements clearly to your suppliers to ensure compliance.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: The number of decimals for Quantity/Price/Unit price basis value (123) on line 123 exceeds the maximum allowed (123).
+"In this article, we will review the TeC error: ""Value missing for Bank transfer Clearing number.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Bank transfer Clearing number.
+"".
+This error means that the invoice or transaction lacks a valid payment method. The system requires at least one supported payment method (Bank number, IBAN, etc.) to proceed. For bank transfers, make sure the clearing number is present in the invoice. If BIC was provided, this is valid only for IBAN transfers.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+):
+Review the invoice data and ensure a valid payment method is included. You can add one from the menu ""
+Settings
+"" ""
+Sending
+"". In the section ""
+Payment method""
+, add the desired payment type. If you are unsure, contact the recipient and ask for details.
+For bank transfers, make sure the clearing number is present in the invoice. If BIC was provided, this is valid only for IBAN transfers.
+If you are a customer (receiving the invoice)
+: You have two options:
+Contact the sender (supplier) if the invoice was received without payment details. They should correct their invoice document and resend it.
+You can accept the document in its current state, without the payment method. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can press the button ""Accept"" to receive it.",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Bank transfer Clearing number
+"In this article, we will review the TeC error: ""Value missing for Buyer contact Contact name.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Buyer contact Contact name.
+"".
+This error means that the Buyer Contact Name field is required by the recipient, but no value has been provided. The recipients system expects this information to identify the responsible person or department for the purchase, and the absence of this value prevents the invoice or document from being processed.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Always provide a contact name when required by the recipient. This could be a person, team, or department responsible for the order.
+Check recipient requirements and review the recipient invoice guidelines to confirm which fields are mandatory.
+Coordinate with your customer to obtain the correct contact name.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Clearly define required fields in your supplier onboarding materials or invoice submission guidelines.
+Provide examples of acceptable contact names (e.g., Peter Pettersson, Procurement Team, etc.).
+Notify suppliers when this field is missing and explain how to correct it for future submissions.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Buyer contact Contact name.
+"In this article, we will review the TeC error: ""Value missing for Buyer order number on invoice level."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Buyer order number on invoice level.
+"".
+This error indicates that the Buyer Order Number at the invoice level has not been provided. The recipients system expects this value to match a predefined value.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Always include the Buyer Order Number when submitting invoices to customers who require it.
+Check the recipients requirements to confirm if the order number is mandatory.
+Coordinate with your customer to retrieve the correct order number if its missing from your records.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Clearly communicate the requirement for Buyer Order Numbers in your invoice submission guidelines.
+Provide suppliers with valid order numbers during the ordering process to avoid confusion.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Buyer order number on invoice level.
+"In this article, we will review the TeC error: ""Value missing for Buyer's reference 1 on invoice level."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Buyer's reference 1 on invoice level.
+"".
+This error indicates that the Buyers Reference 1 field is required at the invoice level, but no value has been provided. The recipient has a predefined list of valid references, and providing no value will result in the document being rejected.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Always include Buyers Reference 1 when submitting invoices to customers who require it.
+Do not use generic placeholders like 'n/a', 'N/A', 'none', '0', or 'unknown' unless explicitly allowed by the recipient.
+Check the recipients requirements to confirm if this field is mandatory and what format or values are expected.
+Contact your customer to obtain the correct reference if its missing or unclear.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Maintain a clear reference List and ensure your suppliers have access to an up-to-date list of valid buyer references. You can add or verify the allowed values from the menu ""
+Settings
+"" ""
+Receiving
+"", then the option ""
+Reference validation settings
+"".
+Include reference requirements in your supplier materials or invoice guidelines.
+If a supplier repeatedly sends invalid/empty references, notify them of the correct value and explain the importance of using it.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Buyer's reference 1 on invoice level.
+"In this article, we will review the TeC error: ""Value missing for Due date.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Due date.
+"".
+This error means that the invoice cannot be processed because the due date is missing. A valid due date is required to determine payment timelines and ensure proper handling of the invoice.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): Ensure that the ""
+Due date
+"" fields is correctly included and have a value. If creating the invoice from the portal, this field is available in the section ""
+Payment details
+"".
+If you are a customer (receiving the invoice)
+: You have two options:
+Communicate proper formatting and logic requirements to your suppliers.
+You can accept the document in its current state, without the payment method. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can press the button ""Accept"" to receive it.",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Due date.
+"In this article, we will review the TeC error: ""Value missing for Tax exemption text on invoice-level allowances/charges."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value missing for Tax exemption text on invoice-level allowances/charges.
+"".
+This error means that the invoice includes a tax exemption category (such as 0% VAT, Tax exempt...) but lacks the required justification text. A valid reason must be provided when a tax exemption is applied.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that the correct Tax code/category is used.
+If you use tax exemption (0% tax, Tax Exempt, Tax not applicable...), please provide a tax exemption text to justify it. If you create the invoice from our portal, you can add this text under the field ""
+Tax exemption text
+"" (select ""More details"" to display it).
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate proper formatting and requirements to your suppliers.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value missing for Tax exemption text on invoice-level allowances/charges.
+"In this article, we will review the TeC error: ""Value of Buyer order number on invoice level exceeds maximum length (35)."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value of Buyer order number on invoice level exceeds maximum length (35).
+"".
+This error means that the invoice cannot be processed correctly because the Buyer order number exceeds the allowed character limit of 35. This can happen due to:
+1. Special characters (non-Latin) counted toward the maximum length.
+2. Incorrect data entry or formatting spaces, etc
+3. An amount of characters that is more than 35.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Verify that the Buyer order number does not exceed 35 characters. This is a global rule that this number shouldn't be so long.
+If you don't know the proper Buyer order number, contact your customer.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Clearly communicate Buyer order number requirements to suppliers, including the expected format.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value of Buyer order number on invoice level exceeds maximum length (35).
+"In this article, we will review the TeC error: ""Value provided for GTIN on line 1 (123) is invalid.""
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value provided for GTIN on line 1 (123) is invalid.
+"".
+This error indicates that the GTIN (Global Trade Item Number) provided on line 1 is not a valid GTIN. GTINs are unique identifiers used globally to identify products, and they must follow specific formats and validation rules (such as length and check digit).
+You can verify GTINs using the GS1 validation service:
+https://www.gs1.org/services/verified-by-gs1/results?gtin=
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): Please verify the following:
+Ensure GTIN validity: Use only GTINs that conform to GS1 standards (typically 8, 12, 13, or 14 digits with a valid check digit).
+Avoid placeholder or internal codes: Do not use internal product codes or short numbers that are not registered GTINs.
+Use GS1 tools: Validate GTINs using GS1s online tools or APIs before submitting product data or invoices.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Provide GTIN requirements: Clearly communicate GTIN formatting and validation expectations to your suppliers.
+Support suppliers: If a supplier submits an invalid GTIN, provide guidance or direct them to GS1 resources for correction.
+If you wish to make an exception, you can accept the document in its current state. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value provided for GTIN on line 1 (123) is invalid.
+"In this article, we will review the TeC error: ""Value provided for Payment reference (OCR number) ('123') is invalid."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+Value provided for Payment reference (OCR number) ('123') is invalid.
+"".
+This error means that the invoice cannot be processed because the OCR number does not meet the required format or checksum validation. An OCR number is a unique reference code (commonly used in Sweden), printed on invoices or payment forms to help machines accurately identify and process payments. The OCR number might be validated based on a rule by the invoice recipient. The OCR number is provided directly on the invoice.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Ensure that the OCR number is numeric and follows the correct rules.
+Avoid including spaces, special characters, and letters.
+Contact your customer to obtain the expected OCR number format expected by them.
+If you are creating the invoice from our portal, please make sure to provide the value in the field ""
+Payment reference (OCR number)
+"" under ""
+Payment details
+"" part.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Communicate the precise requirements clearly to your suppliers to ensure compliance. If you expect a specific format, share it with your suppliers.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: Value provided for Payment reference (OCR number) ('123') is invalid
+"In this article, we will review the TeC error: ""You are blocked as supplier by the receiving member because you are not found in his supplier list."".
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide
+
+Issue Review:
+When sending or receiving invoices, you could encounter the error ""
+You are blocked as supplier by the receiving member because you are not found in his supplier list.
+"".
+This error means that the invoice cannot be delivered because the supplier is not recognized by the recipients system. The recipient (receiver) uses a whitelist of approved suppliers, and that supplier is not currently included.
+The error can be visible in both ""Sent"" & ""Rejected"" menus, depending on whether you are sending or receiving the invoicing document. The error message will remain the same.
+
+Solution:
+Your next step will depend on whether you are sending or receiving invoices:
+If you are a supplier (sending the invoice
+): You should verify the following:
+Contact the recipient and request to be added to their supplier list with the correct organization details.
+If you are a customer (receiving the invoice)
+: Your options are the following:
+Ensure your supplier list is up to date and includes all valid suppliers.
+If you wish to make an exception, you can accept to receive the document without the expected value. From the menu ""
+Invoice
+"" ""
+Rejected
+"", you can find the invoice in error. After selecting it, you can either press the button ""Accept"" or ""Reject"".",Tungsten e-Invoice Connect (TeC) - Error Troubleshooting: You are blocked as supplier by the receiving member because you are not found in his supplier list
+"With Tungsten e-Invoice Connect, you can send or receive your invoices directly via FTP/SFTP. This service is available for Basic/Plus/Premium membership levels.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+Table of contents:
+Guide 1: How to send invoices via FTP/SFTP?
+Guide 2: How to receive invoices via FTP/SFTP?
+ Guide 1: How to send invoices via FTP/SFTP?
+
+Step 1:
+Verify your membership level
+To send invoices via FTP/SFTP, the minimum membership level is Basic. If your membership level is free, you will need to upgrade it. Otherwise, the features described below will not be available to you. From the portal, check the footer of the page:
+Basic/Plus/Premium
+: You can continue with this guide. FTP/SFTP is available.
+Free
+: You need to select the option ""
+Upgrade
+"" and choose a higher membership level.
+
+Step 2:
+Configure your settings
+You can connect your ERP system or an eDelivery operator to start using Tungsten e-Invoice Connect as a hub, transferring invoices to recipients.
+From the menu, select ""
+Settings
+"" - ""
+Sending
+"".
+Scroll down to the part ""
+Integration with a business system for sending
+"".
+Select your business system or format available.
+A new section, ""
+File transport
+"", will appear. Select Fetch files from ""
+FTP account
+"".
+
+Step 3:
+Provide FTP or SFTP instructions
+After selecting ""
+FTP account
+"", you will be invited to provide all the necessary information for us to connect to your server.
+Server
+: Type the
+FTP
+server address. This could be the IP address.
+Port
+: Select the
+FTP
+port number. Standard is
+21
+for direct
+FTP
+connections, and
+22
+is standard for SSH File Transfer Protocol (S
+FTP
+).
+Username
+: Type the username for your
+FTP
+account.
+Password
+: Type the password for your
+FTP
+account.
+Path on
+FTP
+server
+: Specify the path to the folder where the files are to be retrieved.
+File name pattern
+: Specify whether any specific types of invoices are to be retrieved from the folder. For example, to only retrieve XML invoices, type *.xml. If this box is left empty, all files are retrieved.
+FTP
+S security method
+: Select a method.
+Secure
+FTP
+/S
+FTP
+: Select to enable S
+FTP
+(encryption). This is recommended.
+Binary mode
+: Select to enable binary mode, which means the transferred data is not converted but sent as a direct stream. If this option is not selected, ASCII transfer is used instead, which means that all data is first converted to text characters and then the data is converted back when it reaches the recipients.
+Remove file after polling
+: Select to delete files after they are transferred to Tungsten e-Invoice Connect. The user created on your side must have the necessary file permissions for this action.
+Passive mode for transfer
+: Select to enable passive mode, which allows direct transfer without any further configuration. We recommend that you select this setting.
+
+Step 4:
+Final actions
+You will need to provide an email for error notification and save your inputs.
+Under
+Email address to send error notifications to
+, enter the email address to use when sending notifications if there are problems with a transfer.
+Click
+Save
+at the bottom of the page.
+ Guide 2: How to receive invoices via FTP/SFTP?
+
+Step 1:
+Verify your membership level
+To receive invoices via FTP/SFTP, the minimum membership level is Basic. If your membership level is free, you will need to upgrade it. Otherwise, the features described below will not be available to you. From the portal, check the footer of the page:
+Basic/Plus/Premium
+: You can continue with this guide. FTP/SFTP is possible.
+Free
+: You need to select the option ""
+Upgrade
+"" and choose a higher membership level.
+
+Step 2:
+Configure your settings
+You can connect your ERP system to start using Tungsten e-Invoice Connect as a hub, transferring received invoices.
+From the menu, select ""
+Settings
+"" - ""
+Addresses
+"".
+If you are looking to set a new recipient, select ""
+Add address
+"". If you are looking to update an existing recipient, select the ""
+Edit
+"" option.
+In the next page, make sure to select the option ""
+Receive invoices via business system integration
+"". If you select another option (e.g., ""Not yet ready,"" ""Email,"" or ""Web interface""), FTP/SFTP will not be available.
+In the part ""
+Default transportation
+"", select
+FTP
+.
+
+Step 3:
+Provide FTP or SFTP instructions
+After selecting ""
+FTP
+"", you will be invited to provide all the necessary information for us to connect to your server.
+FTP Server
+: Type the
+FTP
+server address. This could be the IP address.
+Port
+: Select the
+FTP
+port number. Standard is
+21
+for direct
+FTP
+connections, and
+22
+is standard for SSH File Transfer Protocol (S
+FTP
+).
+Username
+: Type the username for your
+FTP
+account.
+Password
+: Type the password for your
+FTP
+account.
+Path on
+FTP
+server
+: Specify the path to the folder where the files are to be sent.
+Temporary directory on remote server while sending
+: If file is first uploaded to a temporary folder on the remote server, then moved to the final location only after the upload is complete, to avoid incomplete files being processed.
+Binary mode
+: Select to enable binary mode, which means the transferred data is not converted but sent as a direct stream. If this option is not selected, ASCII transfer is used instead, which means that all data is first converted to text characters and then the data is converted back when it reaches the recipients.
+Passive mode for sending
+: Select to enable passive mode, which allows direct transfer without any further configuration. We recommend that you select this setting.
+Secure
+FTP
+/S
+FTP
+: Select to enable S
+FTP
+(encryption). This is recommended.
+Once completed, you must press the button ""
+Save
+"" at the bottom of the page.",Tungsten e-Invoice Connect (TeC) - How can I send and receive my invoices via FTP or SFTP?
+"If you no longer wish to receive invoices but still want to be able to send them via the TeC portal, you can easily adjust this setting from your account.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Stop a specific address, recipient, or profile
+With TeC, you can set up multiple recipient addresses and settings. This is useful if your company has multiple branches, departments, or offices. In such cases, you can stop receiving invoices for a particular recipient while keeping the rest of the business unchanged.
+From the top menu, select ""
+Settings
+"" - ""
+Addresses
+"".
+Find the recipient profile and select the ""
+Edit
+"" icon.
+Select the option ""
+Not yet ready to receive invoices
+"".
+Press ""
+Save
+"" at the bottom of the page.
+You will have to revert this action by selecting one of the 3 options below to receive invoices via web interface, PDF, or business system integration. This feature is useful if you're performing a system update and need to temporarily pause invoice reception.
+
+Step 2:
+Stop the entire Company account
+If you want to stop all your recipient profiles, it is easier to make the change at the company level.
+From the top menu, select ""
+Settings
+"" - ""
+Member account
+"".
+In the section ""Use e-Invoice Connect"", select the option ""
+... to send invoices only
+"".
+Press the button
+Save
+at the bottom of the page.
+With this setting, you will still be able to send invoices, but you will no longer receive any. You can revert this change at any time in the future.
+ If you are looking to terminate your account completely rather than just stopping receiving invoices, the process will be different and can't be completed from the settings. You can refer to this article:
+Tungsten e-Invoice Connect (TeC) - How to Unregister or Terminate our company account?",Tungsten e-Invoice Connect (TeC) - How can I stop our company from receiving invoices?
+"Tungsten e-Invoice Connect supports the ability to add companies to public registries.. If you need to update or remove your company record, please refer to this article.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+With Tungsten e-Invoice Connect, we can add companies to public registries such as PEPPOL, NEA (Sweden), TIEKE (Finland), ELMA (Norway), NemHandel (Denmark), or our own TeC interoperability registry. If, for any reason, you need to update or remove your company from one of these registries, please contact our Technical Support.
+The request must be submitted by the company itself; it is not possible to request a change or deletion on a customers behalf.
+Partners may only request registry updates for direct customers they represent on the TeC portal.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name.
+Record update or removal (if update, please specify the exact changes required).
+Company Identifiers (PEPPOL ID, ORGnr, ORG ID, GLN, OVT, Y-tunnus, CVR, etc.).
+Specify the registry to update: PEPPOL, NEA (Sweden), TIEKE (Finland), ELMA (Norway), NemHandel (Denmark), or the TeC interoperability registry.
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships
+. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?
+ Customers with a Free or Basic membership are not eligible to request a new record to be added to a registry. However, if a record already exists, customers on a Free or Basic membership can still request its deletion using the following contact form:
+Tungsten e-Invoice Connect Technical Support Contact Form",Tungsten e-Invoice Connect (TeC) - How to Change or Delete an existing record from a Registry or PEPPOL?
+"For various reasons, you might need to test a data file or an invoice. As all tests must be performed in our production environment, please review the recommendations below.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Recommendations
+Unfortunately, we do not offer a public testing environment. This is because we do not maintain a one-to-one replica of our production environment. Our testing environment is reserved for internal development and the implementation of specific system integrations. Please note that our Technical Support team will not process files submitted through support cases, since all invoice processing, including test ones, takes place in the production environment.
+Sending Invoices:
+As a supplier, you will need to find a customer who agrees to receive your test invoices. Once sent, you can review the results via the portal. Because documents cannot be deleted, you and your customer may consider rejecting the test invoice or issuing a credit note of the same value to effectively nullify the total amount due.
+Receiving Invoices:
+As a customer, you will need a supplier to send you a test invoice. Depending on the test scenario, you may need to provide your supplier with specific instructions for generating the invoice. Once received, you can review the results on the portal. Since documents cannot be deleted, you may choose to reject the test invoice or request a credit note of the same value to offset it.
+We understand that some customers may prefer to test invoices or data files without generating an actual invoice on the portal. However, we currently recommend performing complete end-to-end testing directly in our production environment, as this provides better visibility and control over the results.",Tungsten e-Invoice Connect (TeC) - How to Test a datafile or an invoice and review the result?
+"If youve decided to stop using our services and would like to unregister your account, please follow this article.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Important Information
+Only company administrators can request to unregister an account. For security and privacy reasons, we cannot process requests made on behalf of someone else.
+If youre a member user, please contact your administrator to submit the request.
+To ensure the request is genuine, our support team may ask you to verify your identity.
+
+Step 2:
+Contacting our Technical Support
+The request must be submitted to our Technical Support team. You can find more information to contact us in this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?
+If you are a customer with a Free or Basic membership level, you will have to use a special contact form available here:
+Tungsten e-Invoice Connect Technical Support Contact Form
+In your request description, please include:
+Termination Date.
+Cancellation Reason.
+Approvers name, email, and phone number.
+Company Name.
+TeC Member ID -
+Click here to find your member ID
+Once verified, your request will be processed. You will receive confirmation once your account has been successfully deactivated.",Tungsten e-Invoice Connect (TeC) - How to Unregister or Terminate our company account?
+"Tungsten e-Invoice Connect is directly connected to certain VAN operators. This is referred to as interoperability and allows you to send and receive invoices with non-TeC customers.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+Tungsten e-Invoice Connect works with different VAN Operators to extend the list of customers available for you to send invoices to. If your customer is not on Tungsten e-Invoice Connect, but is using one of the VAN Operators listed below, we can add them to the list of your customers on the portal. There are a few important points to be aware of:
+You must know the VAN Operator of your customer (how do they receive invoices).
+You must verify that the customer isn't already available on the portal. You can do this from the menu ""
+Invoice
+"" - ""
+Create new
+"" - Then search for a recipient. If they are available, you should try to invoice them directly. If successful, then you can already transact with your customer.
+If you get an error ""
+The electronic recipient could not be identified
+"", please verify that you provided the correct customer ID or party ID. If you provided the correct one, then an update to our registry might be required. You are most likely looking to change the VAN Operator assigned (as they changed it on their end).
+If you get an error ""
+Incorrect Customer GLN has been used
+"", please verify that you provided the correct customer ID or party ID. If you provided the correct one, then an update to our registry might be required. You are most likely looking to change the VAN Operator assigned (as they changed it on their end).
+If your customer is already on PEPPOL, then you don't need to add them via their VAN Operator. You can already send them invoices from the menu ""
+Invoice
+"" - ""
+Create new
+"" (but this time select ""Search in Peppol Directory""). You can verify this with this guide:
+Tungsten e-Invoice Connect (TeC) - How to check Peppol Customer Registration?
+List of
+VAN Operators that we can connect
+with: Apix Messaging, Basware, Basware, BGC, CGI, Compello AB, Crediflow, EDI Solutions, Exder, Inexchange, LOGIQ AS, Maventa, Nordea, Opentext, Opus Capita, Opus Capita, Pagero, PostNord, Ropo Capital Oy, ScanCloud, Sproom, Swedbank, Tieto, TrueCommerce, Tyringekonsult AB, Visma Proceedo.
+ If your customer's VAN operator is not in the list, we will not be able to connect to them. In that case, an alternative channel such as PEPPOL should be used, or the customer should be invited to use TeC directly.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company Identifiers they use to receive invoices (GLN's, ORG NUMBERS, etc)
+VAN Operator name (the company they use to receive invoices)
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the TeC registry (interoperability list). If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How can my customers receive my invoices outside TeC via their own VAN Operators?
+"Tungsten e-Invoice Connect is directly connected to certain VAN operators. This is referred to as interoperability and allows you to send and receive invoices with non-TeC customers.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+Tungsten e-Invoice Connect works with different VAN Operators to extend the list of customers available for you to send invoices to. If your customer is not on Tungsten e-Invoice Connect, but is using one of the VAN Operators listed below, we can add them to the list of your customers on the portal. There are a few important points to be aware of:
+You must know the VAN Operator of your customer (how they receive invoices).
+You must verify that the customer isn't already available on the portal. You can do this from the menu ""
+Invoice
+"" - ""
+Create new
+"" - Then search for a recipient. If they are available, you should try to invoice them directly. If successful, then you can already transact with your customer.
+If you get an error ""
+The electronic recipient could not be identified
+"", please verify that you provided the correct customer ID or party ID. If you provided the correct one, then an update to our registry might be required. You are most likely looking to change the VAN Operator assigned (as they changed it on their end).
+If you get an error ""
+Incorrect Customer GLN has been used
+"", please verify that you provided the correct customer ID or party ID. If you provided the correct one, then an update to our registry might be required. You are most likely looking to change the VAN Operator assigned (as they changed it on their end).
+If your customer is already on PEPPOL, then you don't need to add them via their VAN Operator. You can already send them invoices from the menu ""
+Invoice
+"" - ""
+Create new
+"" (but this time select ""Search in Peppol Directory""). You can verify this with this guide:
+Tungsten e-Invoice Connect (TeC) - How to check Peppol Customer Registration?
+List of
+VAN Operators that we can connect
+with: Apix Messaging, Basware, Basware, BGC, CGI, Compello AB, Crediflow, EDI Solutions, Exder, Inexchange, LOGIQ AS, Maventa, Nordea, Opentext, Opus Capita, Opus Capita, Pagero, PostNord, Ropo Capital Oy, ScanCloud, Sproom, Swedbank, Tieto, TrueCommerce, Tyringekonsult AB, Visma Proceedo.
+ If your customer's VAN operator is not in the list, we will not be able to connect to them. In that case, an alternative channel such as PEPPOL should be used, or the customer should be invited to use TeC directly.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company Identifiers they use to receive invoices (GLN's, ORG NUMBERS, etc)
+VAN Operator name (the company they use to receive invoices)
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the TeC registry (interoperability list). If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How to add or change a customer in the interoperability registry from TeC?
+"NemHandel is Denmarks national e-invoicing infrastructure that enables businesses and public institutions to securely send and receive electronic invoices using standardized formats like OIOUBL and PEPPOL.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+If your Danish company is not yet registered in NemHandel, and you want to receive invoices (including B2G), then your company needs to be added to the NemHandel registry. There are a few important points to be aware of:
+The request must be submitted by the company itself; it is not possible to request registration in the Danish registry on the customer's behalf.
+While it is not mandatory for Danish companies to be registered in NemHandel or PEPPOL, it is strongly recommended to ensure smoother e-invoicing operations.
+Being part of the NemHandel does not automatically add you to PEPPOL. If you are looking to add your company to Peppol, you must mention it as part of your request.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company Identifiers (CVR, GLN etc.)
+If you are providing multiple IDs, specify your primary one.
+If you are looking to be added to PEPPOL in addition to NemHandel, clearly mention it in your request.
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the Danish registry. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How to add our company to Denmark's registry (NemHandel)?
+"Tungsten e-Invoice Connect is an official PEPPOL SMP (Service Metadata Publisher), which means we are authorized to register and manage participant data within the PEPPOL network. As a customer of Tungsten e-Invoice Connect, we can help you to register on PEPPOL.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+If your company is not yet registered in PEPPOL, and you want to receive invoices, then your company needs to be added in the PEPPOL network. There are a few items to be made aware of:
+The request must be submitted by the company itself; it is not possible to request registration in PEPPOL on the customer's behalf.
+If a customer is already registered in PEPPOL, and requires modifications, then changes must be applied by the SMP/Operator that added the customer first. We can only do modifications to PEPPOL customers added by Tungsten e-Invoice Connect.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company Identifiers (ORGnr, GLN etc.)
+If you are providing multiple IDs, specify your primary one.
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the PEPPOL network. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How to add our company to Peppol registry?
+"One company account can have multiple users. This allows each employee to log in using their own email address.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Account users menu
+The ""Account users"" page will allow you to manage all your users. This includes granting access, revoking access and changing access. From the top menu, select ""
+Settings
+"" - ""
+Account users
+"". The next action will depend on whether the email address is already registered as a user.
+Button ""
+Add existing user
+"": If the email address can already login to Tungsten e-Invoice Connect, select this option. The registration process is simplified. The employee might already have access to other company accounts. It is possible for a user to access multiple company accounts. The company account can be selected after logging in or at any time later.
+Button ""
+Add new user
+"": If the email address is new to Tungsten e-Invoice Connect, select this option. This option is for first-time users who are new to our portal. The new user flow will be triggered.
+ If you are unsure about the correct option, we recommend using the button ""
+Add new user
+"" first. If the email address already exists, you will get an error message when providing the email address. In that case, you will have to use the other option ""
+Add existing user
+"".
+
+Step 2:
+User settings
+After selecting the option ""
+Add new user
+"", you will be invited to provide some information and notification settings.
+Name
+: We recommend adding the first and last name of the user.
+Email address:
+This will be used for login and notifications.
+Phone: Optional.
+Mobile phone: Optional.
+Fax: Optional.
+Administrator
+: Select this if the user should have administrator rights. This grants additional privileges such as managing users, editing settings, and updating the company address.
+Notifications
+: You can choose which notifications the user should receive.
+Once ready, press the button ""
+Save
+"":
+If
+successful
+, you will get a confirmation message ""
+The user is added""
+.
+If
+not successful
+, you will get an error ""
+
+A user with this email address already exists
+"". In that case, you must create the user using the button ""
+Add existing user
+"" instead.
+If using the button ""
+Add existing user
+"", you will only need to provide the email address. Remaining user information is already available in our system.
+
+Step 3:
+Confirming Email Address
+In the case you select ""
+Add new user
+"", the person will have to confirm their email address. If the user already existed, they will simply get informed via email, without action required.
+The new user will need to open the email ""Verify your email address for e-Invoice Connect"".
+Then the user should be clicking on the link available.
+
+Step 4:
+Managing existing users
+In the future, you might be looking to change user access or configuration. In that case, you will have the following possibilities:
+Administrator
+and
+Notifications
+: You can change them directly by using the checkbox.
+Revoke
+/
+Grant
+: You can remove access to the account by selecting ""Revoke"". This will also grey out the administrator option. You can grant back the access in the future.
+Delete
+: You can delete a user completely from the list. You need to first revoke the access to display this option.",Tungsten e-Invoice Connect (TeC) - How to add a new user to your company account?
+"TIEKE is Finlands national e-invoice address registry that helps businesses and service providers find and manage electronic invoicing details like OVT codes and operator routing information.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+If your Finnish company is not yet registered in TIEKE, we can help you to be registered. There are a few items to be made aware of:
+The request must be submitted by the company itself; it is not possible to request registration in the Finnish registry on the customer's behalf.
+Being listed in TIEKE does not enable you to receive invoices. TIEKE is not a network for transmitting e-invoices. It functions more like a directory or phone book, listing the e-invoicing addresses and routing information of companies. Invoices are received directly via Tungsten e-Invoice Connect, other VAN operators (via interopability), or PEPPOL.
+Similar to the above, being added to TIEKE does not automatically add you to PEPPOL. If you are looking to add your company to Peppol, you must mention it as part of your request.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company Identifiers (Y-tunnus, ORGnr, OVT, GLN, etc.)
+If you are providing multiple IDs, specify your primary one.
+If you are looking to be added to PEPPOL in addition to TIEKE, clearly mention it in your request.
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the Finnish registry. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How to add our company to Finland's registry (TIEKE)?
+"ELMA is a Norwegian registry used for electronic invoicing (e-invoicing) in compliance with EHF (Elektronisk Handelsformat), which is Norways standard for electronic business documents.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+If your Norwegian company is not yet registered in ELMA, and you want to receive invoices, then your company needs to be added to the ELMA registry. There are a few items to be made aware of:
+The request must be submitted by the company itself; it is not possible to request registration in the Norwegian registry on the customer's behalf.
+Being added to ELMA will automatically add you to the PEPPOL network. ELMA is Norways national Peppol access point/registry.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company ORG (ID)
+Contact Person (Name, Phone & Email).
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the Norwegian registry. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How to add our company to Norway's registry (ELMA)?
+"NEA is Swedens national e-invoice address registry that helps businesses and service providers find and manage electronic invoicing details like operator routing information.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Information & Disclaimers
+If your Swedish company is not yet registered in NEA, we can help you to be registered. There are a few items to be made aware of:
+The request must be submitted by the company itself; it is not possible to request registration in the Swedish registry on the customer's behalf.
+Being listed in NEA does not enable you to receive invoices. NEA is not a network for transmitting e-invoices. It functions more like a directory or phone book, listing the e-invoicing addresses and routing information of companies. Invoices are received directly via Tungsten e-Invoice Connect, other VAN operators (via interopability), or PEPPOL.
+Similar to the above, being added to NEA does not automatically add you to PEPPOL. If you are looking to add your company to Peppol, you must mention it as part of your request.
+
+Step 2:
+Contacting our Technical Support
+The request must be raised to our Technical Support team. You will need to provide the following information:
+Company Name
+Company Identifiers (ORGnr, Organisationsnummer, GLN, Peppol ID, etc.)
+If you are providing multiple IDs, specify your primary one.
+If you are looking to be added to PEPPOL in addition to NEA, clearly mention it in your request.
+
+Important
+:
+Technical Support for TeC is provided to direct customers with Plus or Premium memberships.
+Customers with a Free or Basic membership are not eligible to request changes in the Swedish registry. If you have purchased Tungsten e-Invoice Connect through a partner, please contact your partner directly to raise the request on your behalf. You can find more information via this article:
+Tungsten e-Invoice Connect (TeC) - How to contact TeC Technical Support?",Tungsten e-Invoice Connect (TeC) - How to add our company to Sweden's registry (NEA)?
+"Tungsten e-Invoice Connect offers four membership levels: Free, Basic, Plus, and Premium. You can choose the subscription that best matches your invoicing needs.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Open the Membership menu
+You can upgrade your membership at any time, with changes taking effect instantly. Technical Support is available exclusively to users with Plus and Premium memberships.
+Open our portal at
+https://web.fakturaportalen.se/
+Log in with your
+Email
+and
+Password
+.
+Scroll down the page, and select the option ""
++ Upgrade
+"".
+
+Step 2:
+Select your new Membership Level
+You will now be able to change your membership level.
+Review the features of each membership level and select the one that best suits your needs. Simply select the radio button ""
+Choose
+"".
+If you have a registration code, enter it in the appropriate field.
+Click ""
+Add comment
+"" and choose whether you need help connecting Tungsten e-Invoice Connect to your billing system, using virtual printer solutions, or anything else about your membership. You can just type a short message. If you have a question about our offers, you can also contact our Sales department at
+info@invoiceportal.net.
+Read and accept the Terms and Conditions.
+Verify the information provided and click ""
+Change
+"".
+ When
+upgrading
+: The change goes into effect immediately, and you have access to all the features included in that membership level. The first bill will include the current remaining days of the month and the next complete month. You will be contacted by our Accounts Receivable team during that timeframe.
+ When
+downgrading
+: The change will be applied from the first day of the next calendar month. An exact confirmation of the day will be displayed by our portal.",Tungsten e-Invoice Connect (TeC) - How to change my membership level or upgrade it?
+"Peppol is a standardized international network that enables businesses and governments to exchange electronic documents like invoices securely and interoperably.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+Table of contents:
+Guide 1: With the TeC Portal Recipient Search
+Guide 2: With Peppol Directory Website
+Guide 3: How to Monitor Peppol Access Point
+ Peppol operates through a network of multiple certified Access Points and decentralized directories (SMPs). In some cases, searches may return no results if a participant's metadata is temporarily unavailable (mostly due to their Access Point or SMP experiencing a downtime). In this guide, we will provide two methods to search for customers on the Peppol network, though many other tools are available online. We will also explain how to monitor the status of Access Points.
+ Guide 1: With the TeC Portal Recipient Search
+
+Step 1:
+Log into the portal
+In order to search for customers on Peppol, you need to open our portal and log in.
+Access our portal via this link:
+https://web.fakturaportalen.se/login
+Add your
+Email
+and
+Password
+.
+Press the button ""
+Log in
+"".
+
+Step 2:
+Search for your customer
+We will use the functionality to create an invoice, as it gives access to the Peppol Directory.
+From the top menu, select ""
+Invoice
+"" - ""
+Create new
+"".
+Select the option ""
+Search in Peppol Directory
+"". We recommend selecting the checkbox first, as it will clear any existing search criteria from the search bar.
+Add the Peppol ID in the search bar. Press the button ""
+Search
+"". You can use the participant identifier without the ISO 6523 code before.
+If your customer is found in Peppol, you will find them in the results.
+If no results are returned, you might confirm the result by checking on our second proposed method below. If you did provide an ISO 6523 code before the participant ID (usually in the form of 4 digits followed by a colon), try removing it from the search, leaving only the participant ID.
+ Guide 2: With Peppol Directory Website
+
+Step 1:
+Open Peppol Directory website
+This Open Source project can allow any visitor to search in the proposed directory. Currently the publication of Peppol participant information in an SMP happens on a voluntary basis. That implies that not all business entities are listed in the Peppol Directory which implies that if your desired partner does not show up in here it doesn't mean that the entity is not in the Peppol network!
+Access the Peppol Directory here:
+https://directory.peppol.eu/public/locale-en_US/menuitem-search
+Add the Peppol ID in the search bar. Press the button ""
+Search Peppol Directory
+"". You can use the participant identifier without the ISO 6523 code before.
+If your customer is found in Peppol, you will find them in the results.
+If no results are again not returned, there is a high chance that your customer isn't yet registered on Peppol. They can contact their VAN Operator in order to make sure to be correctly added. If you know their Access Point, you might verify that their registry is online as per the third guide below.
+ Guide 3: How to Monitor Peppol Access Point
+
+Step 1:
+Monitor Access Point
+Depending on the search tool used, you might face errors when a server system is down. Search tools are actually searching in multiple Peppol access point directories, each of them having their own servers. It's possible that at the time, one of them is not available.
+Open the monitoring page:
+https://monitor.galaxygw.com/
+If a particular server/access point is not available, it will appear in
+red
+here (you can hover to see the precise date).
+If the server is currently down, it will be appearing in
+red
+(Down) on the right indicator.
+You can
+select the name of the provider
+to get a more proper view of all recent events:",Tungsten e-Invoice Connect (TeC) - How to check Peppol Customer Registration?
+"When a company is registered as a member on Tungsten e-Invoice Connect, a Member ID is assigned. This Member ID can allow our Technical Support team to locate your account efficiently. This member ID can also be used for API integration.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Log into the portal
+In order to view your member ID, you need to open our portal and log in.
+Access our portal via this link:
+https://web.fakturaportalen.se/login
+Add your
+Email
+and
+Password
+.
+Press the button ""
+Log in
+"".
+Note: If you can't log in, you will not be able to see your member ID. However, in case of login issues, our Technical Support only needs your email address to assist you.
+
+Step 2:
+""Member account"" page
+After opening our ""Member account"" page, you will be able to see your member ID directly at the bottom of the page.
+From the top menu, select ""
+Settings
+"" and then ""
+Member account
+"".
+Scroll down the page until the last section named ""
+Member ID
+"".
+You will see your member ID for the company in a text box. You can directly copy it using the copy icon.",Tungsten e-Invoice Connect (TeC) - How to find my TeC Member ID?
+"Multi-Factor Authentication (MFA) is a security feature that adds an extra layer of protection to your accounts by requiring multiple forms of verification, making it much harder for unauthorized users to gain access. While you can continue using the password alone to securely access your e-Invoice Connect account, two-factor authentication significantly improves the security of your account and all the personal information that you store there.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+Table of contents:
+Guide 1: Set up your MFA
+Guide 2: Reset or Change your MFA
+Guide 3: Set MFA as mandatory for all users
+ Guide 1: Set up your MFA
+
+Step 1:
+Start the configuration
+The MFA setup can be started from the
+Log in pag
+e or from the
+Settings page.
+Via the Log in page:
+If you log in for the first time, after you enter your login credentials and click
+Log in
+, you are prompted to set up the two-factor authentication. Otherwise, this message will appear every 14 days.
+Yes
+: Follow the steps in this topic to configure this option. You should select this option.
+No
+: Continue working without two-factor authentication for the next 14 days.
+Cancel
+: Redirects you to the login page. When you log in next time, you are prompted to set up two-factor authentication again.
+Via the Settings page:
+This option is currently not available. You must set up your MFA from the login page when invited.
+
+Step 2:
+QR Code scanning
+You will be presented with a page containing a QR code and a field to add your six-digit code from the application.
+Open your application (such as Microsoft Authenticator, Google Authenticator, LastPass, Authy, or Duo Mobile).
+Depending on the application, you will have the possibility to add an account (usually with a + sign) or scan a QR code (with a QR or camera sign).
+Scan the QR code
+using the camera of your phone.
+
+Step 3:
+Provide the six-digit code
+Once the scanned QR code is successful, a new authenticator profile should be created. When you open it, you should be presented with a temporary six-digit code. This code should be next to a timer which will be changing automatically.
+Copy the code
+from your application into the field required from the portal.
+Select the button ""
+Continue
+"" to confirm your input.
+---
+
+Step 4:
+Save the recovery code
+After entering the six-digit code, the system will generate three personalized recovery codes. You have to save the codes to a secure location on your computer. You may need these codes if you, for any reason, will not be able to use your application. Please note that each line is a different code, making it a total of 3 different codes at your disposal.
+Select the
+copy icon
+to copy your recovery codes.
+Save them
+somewhere safe on your computer.
+Press the button
+Done
+.
+
+Important
+: If you lose access to your application, recovery codes are mandatory to gain back access to your user account. If not saved properly, you can lose access to your user account entirely.
+ Guide 2: Reset or Change your MFA
+
+Step 1:
+Remove the previous MFA
+If you lose access to your application, you will be looking to unlink your user account from it. The easiest option is to attempt a login, and then provide a recovery code.
+Log in
+using your email and password.
+When asked for your MFA code, select the option ""
+Cannot get a code to enter?
+""
+In the field, provide
+one of your 3 recovery codes
+(you should provide only one). Press ""
+Verify
+"".
+If you still have access to your application, and you can login, you have the possibility to deactivate your current MFA from the portal.
+Navigate from ""
+Settings
+"" - ""
+User
+""
+From the section ""
+Two-factor authentication application setup
+"", press the button ""
+Deactivate
+"".
+Provide the six-digit code from your current application. Press the button ""
+Done
+"".
+
+Step 2:
+Set a new application or remove MFA
+After confirming your recovery code, you will be invited to choose if you want to set a new application. The next steps will be the same as previously shared.
+Yes
+: Follow the steps in this topic to configure this option.
+No
+: Continue working without two-factor authentication for the next 14 days.
+Cancel
+: Redirects you to the login page. When you log in next time, you are prompted to set up two-factor authentication again.
+ Guide 3: Set MFA as mandatory for all users
+
+Step 1:
+Administrator settings
+An administrator has the possibility to set the MFA as mandatory for all users part of a company account. This option can be enabled and removed only by administrators. If you are an administrator, you can follow these steps:
+Navigate from the menu ""
+Settings
+"" - ""
+Account users
+"".
+Checkmark the box ""
+Mandatory two-factor authentication
+"".
+Press the button ""
+Apply
+"".
+If you have multiple company accounts, repeat on each one of them by changing the member.
+When activated, users will all be required to set their MFA on the next login.",Tungsten e-Invoice Connect (TeC) - How can I set manage my Multi-Factor Authentication (MFA)?
+"To send or receive invoices electronically, you need to register your company in e-Invoice Connect.
+ This article specifically applies to Tungsten e-Invoice Connect (formerly known as Invoice Portal). The information provided here does not apply to other Tungsten Automation products. For support or documentation related to other products, please refer to the appropriate resources
+here
+.
+ Guide:
+
+Step 1:
+Open the registration page.
+Open the link
+https://web.fakturaportalen.se/login
+Press the button ""
+Become a member
+"".
+
+Step 2:
+Add user details.
+You will have to fill the following fields:
+Email address
+: specify an email address to be used as the username to log in and (optional) receive notifications.
+Name
+: specify the name of a contact person for this user account.
+Password
+: enter a password with a minimum of 12 characters and confirm by entering it once again.
+ To create a strong password, see ""
+Password recommendations
+"" in Tungsten e-Invoice Connect.
+Your first user account in e-Invoice Connect is set up. Later you can add more users with different access levels.
+
+Step 3:
+Add organization details.
+You will have to fill the following fields:
+Country
+: select the country of your legal address.
+You will not be able to change the country of your legal address but you can set up more recipient offices from different countries and locations later.
+Additional IDs
+: depending on the country selected, provide the required IDs, such as:
+- For
+Organization ID
+, specify the primary identifier of a legal entity in the country selected.
+For example, 656591-0194.
+- For
+VAT/Tax ID
+, specify the identifier for payment of the Value Added Tax and/or other taxes and charges in the country selected.
+For example, SE656591019401.
+- For
+DUNS
+, specify the universal organization identification number from Dun & Bradstreet.
+For example, 13-783-3910.
+- For
+GLN
+, specify the Global Location Number from GS1.
+For example, 4375822721300.
+The party identifier is required for all countries. These IDs are required by some eDelivery networks, such as Peppol. A GLN is preferable.
+For Denmark, Finland, France, Norway, and Sweden: The country-specific ID field is displayed automatically and is required.
+If necessary, later you can set up more recipient offices with additional individual IDs, either official or free-form.
+Legal Name
+: specify your company Legal name as written in your statutory documents.
+Legal Address
+: Specify the legal address.
+Later you can change your legal address or set up delivery and electronic recipient addresses for offices in various countries.
+Your organization details to identify you in e-Invoice Connect are entered. Later you can change the details, supplement member account data and, if necessary, set up more recipient offices with individual receiving settings.
+
+Step 4:
+Select member role.
+Our member roles are invoice sender, invoice recipient, or both. Under Use e-Invoice Connect, select one of the following options.
+...to both send and receive invoices:
+Adds you to the list of invoice senders and recipients.
+...to send invoices only:
+Adds you to the list of invoice senders (suppliers.)
+...to receive invoices only:
+Adds you to the list of invoice recipients (customers/buyers.)
+You have selected whether you send or receive invoices via e-Invoice Connect, or do both. Later you will need to specify sending or receiving settings as necessary. You can change the role at any time.
+
+Step 5:
+Select membership level
+Tungsten e-Invoice Connect offers four different membership levels. Read the offer and select which subscription fits your invoicing needs best.
+Free
+Basic
+Plus
+Premium
+ You will be able to change your membership in the future. Upgrading a membership is done instantly. Our Technical Support can be contacted by Plus and Premium membership level.
+
+Step 6:
+Finishing the registration
+Enter the
+registration code
+, if any.
+Read the Terms and conditions of e-Invoice Connect and select ""
+We agree to the terms
+"".
+Verify the information you provided and click the button ""
+Done
+"".
+
+Step 7:
+Confirming the registration
+A confirmation email will be sent to you to the specified email address.
+Open the confirmation email. Click the
+confirmation link.
+ The registration is complete and confirmed. Now you can log in and configure your sending or receiving settings.
+If you cannot find the confirmation email, check Spam. The email is sent from the mailbox no-reply@invoiceportal.net.",Tungsten e-Invoice Connect (TeC) - How to create a company account?
+Update SAP .net connector from 3.0.22 to 3.0.26,Transfer from IPA/APA to PDAP not working
+"Please contact
+Tungsten Automation Technical Support
+to get assistance.
+For ways of contacting us please refer to this page
+Getting Help with Invoice Portal (link)
+.
+If you or a colleague are unable to create a ticket with
+Tungsten Automation Technical Support
+please create a post (ask a question) in our Community.
+We will create a support case for you and contact your Invoice Portal
+administrator
+directly via email, please make sure this person is aware of us reaching out to them. They will have to verify your request to access the system upon which we will proceed to reset your account.
+Level of Complexity
+Medium",2FA - Two-factor Authentication recovery codes lost
+"Please check the spam folder or contact local IT to have them look for the email from
+info@invoiceportal.net
+.
+In case there is a suspicion that the email address used is misspelled or otherwise incorrect, please contact
+Tungsten Automation Technical Support
+via the
+Tungsten Automation
+Community.
+Level of Complexity
+Easy",Activation email missing
+"Ask the customer to make sure that they have accepted your company as a sender of e-documents.
+Ask the customer to send the e-invoice information to you to verify that the correct identifiers are used. Please share this information with
+Tungsten Automation Technical Support
+so that we can verify that the customer is correctly added to the Invoice Portal Registry.
+Level of Complexity
+Easy,",Customer have not accepted you as a sender / Wrong partyID used
+"If none of the pre-defined ports can be used, the Invoice Portal member must contact
+Tungsten Automation Technical Support
+and a change request process is initiated. The time to resolve this may be quite long since it relies on the software release and deployment cycle.
+We recommend using the pre-defined ports.
+Level of Complexity
+Moderate",Ports used for FTP/SFTP transport
+Ask buyer to contact their Access Point to renew their certificate,Error 893 Certificate is expired
+"If you are only sending a few invoices to this recipient, please join the Tungsten Network and create your invoices directly there. If you are planning to send a larger amount of invoices to this recipient, please contact your Kofax Sales Executive or open a support ticket with Kofax Technical Support.",My customer sent an invitation to join Tungsten Network
+"No, the spring4shell vulnerability
+CVE-2022-22965
+is not applicable to Invoice Portal.
+Kofax products and Spring4Shell vulnerability information CVE-2022-22965",Does the spring4shell vulnerability CVE-2022-22965 affect Invoice Portal
+Ask the supplier to verify the e-invoice information to you to verify that the correct identifiers are used.,Approve Supplier
+Ask buyer to contact their Access Point to renew their certificate.,Error 893 Certificate expired
+Contact the supplier to agree on what data should be included in the electronic invoice.,Line item data is missing on the invoice
+"When a new user account is created an email is sent to the local Invoice Portal administrator. That email prompts the administrator to approve (or reject) the new user account.
+Contact the local Invoice Portal administrator and have them approve the new user account.
+REFERENCES",New user is disabled
+Wait and try sending the invoice again with some delay.,Error 504 Gateway Time-out
+"Make sure that either the internal Invoice Portal customer number is in the
+cac:ID identificationSchemeAgencyID field.
+<cac:BuyerParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cac:ID identificationSchemeAgencyID="" "">nnnnnn</cac:ID>
+</cac:PartyIdentification>
+Or that the field
+cac:CompanyID contains a valid VAT registration number
+<cac:PartyTaxScheme>
+<cac:CompanyID>nnnnnnnnnn</cac:CompanyID>
+<cac:RegistrationAddress>
+<cac:Country>
+<cac:IdentificationCode>SE</cac:IdentificationCode>
+</cac:Country>
+</cac:RegistrationAddress>
+<cac:TaxScheme>
+<cac:ID>SWT</cac:ID>
+</cac:TaxScheme>
+</cac:PartyTaxScheme>
+It is enough with one of these two and if the second field (CompanyID) is wrong the invoice will fail since this field has a higher priority in the identification process.",Electronic recipient could not be identified
+"Make sure your AP Essentials solution is configured to inform the users of when an invoice failed.
+AP Essentials
+knowledge article on how to do this:
+Email notifications for documents failed to import
+Level of Complexity
+Moderate",Missing invoice in AP Essentials
+"How UTS attachments are managed in Invoice Portal:
+Invoice arrives first - the file references an attachment, IP will wait 72 hours
+UTS attachment arrives --> Embed to invoice file and send
+No UTS attachment arrives --> Invoice is sent to an error process and message is returned to the sender
+UTS attachment arrives late --> Most of the time the invoice is then resent (because of the error sent out earlier) and the attachment is matched and embedded in the resent invoice
+If the UTS attachment arrives on its own --> Wait 72 hours to match with an expected invoice,
+If an invoice does not arrive and the sender is clear in the UTS file we will send an error message.
+Note: In some countries the timing of sending attachments is regulated by law (for instance Portugal = 2 days).",Timing of UTS attachments
+"As an administrator user: Go to the Settings menu in Invoice Portal, select Account users and find the user and press the revoke button.
+Remove any tick boxes from the notification area.",Remove a user from Invoice Portal
+"Invoice Portal is not designed to create reports for multiple business units at once. So it can not be done.
+There is work under way developing this functionality, keep an eye out for future release information.",List all suppliers for several companies
+"This is an invoice file with an embedded attachment. In this case the attachment is a TIF image. Most often the attachment is the original invoice.
+Sometimes invoices arrive by postal services to a scanning service facility and are forwarded to the recipient in this format. The xml file then contains information about the source of the scanned file, for instance:
+<cbc:DocumentTypeCode listAgencyName=""ImagingService Scanning"">Scanned</cbc:DocumentTypeCode>
+The explanation for why the sender is the same as the recipient is (in this example) because the scanning service is configured to work this way, an arrangement between the recipient and the scanning service bureau.
+Accessing the embedded file
+Look up the invoice in the Invoice > Received, scroll down the invoice page towards the bottom and find ""Invoice attachments"" there. Selecting the ""preview"" button will download a copy of the attachment to your computer.
+To download the entire invoice package select ""Show log information"" (below the attachment) and select ""Original documents"" to download the zip file containing the xml, PDF and the attachment.",Embedded invoice attachments
+"Translation tables applied to outgoing invoices will not solve this issue, since the value need to be adjusted to individual recipients requirements.
+The solution in this case is to move the translation off the outgoing/sender stage and in to Invoice Portal recipient layer. The invoice will be validated and a translation (of the unitCode field) will be executed if it is required, but only then. This means the output will match the recipient's format independent of if the sender has used PF/OIOUBL or X8A/PEPPOL.
+This validation and translation is currently in place for the unitCode fields and specifically for invoices going into and being sent from Denmark or Danish entities. If other fields should have a similar conflicting format, please contact Kofax.",Conflicting unit codes
+"Fill in the
+Tax representative
+information under the Payment details (expand this area by pressing the plus sign under the Payment terms text field).
+Not all buyers require this information and buyers also sometimes change their requirements regarding this information which is why it may be experienced as a ""new"" issue for a specific buyer.",Seller tax representative name is missing
+"The error indicates the member account is not complete. Make sure to add an identification number to your member account details.
+Go to Settings > Member account > Party identifiers
+Add a VAT number and remember to press ""
+Save
+"" before going back to the invoice.
+Please note: You may need to create a new invoice after adding a new identifier to your account, the draft invoice may retain the old form (e.g. where the identifier was missing).
+Go to Settings > Addresses > Select an Identifier type and enter the relevant number there.
+Please remember to press ""Save"" at the bottom of the screen before going back to the invoice.
+Level of Complexity
+Moderate",Supplier VAT identification is missing
+"CSV is supported. But please keep in mind that custom mapping to our internal format will be required in order for it to work and this is something that Kofax will charge for.
+There is no generic schema for CSV invoices, Kofax will create a custom mapping to our internal XML format (ESXML) based on the customer's file format.",Receiving CSV Invoices
+Contact the vendor sending the erroneous strings in the GTIN field and direct them to use other free/text tags for this information instead.,GTIN field causes an error on the invoice
+"Try again a little later, access issues tend to be resolved automatically.
+A potential workaround is to accept the rejected invoice without editing it, e.g. accepting it without opening it.
+This means the errors causing the invoice to be rejected will reach the financial system and will have to be managed there.
+Another alternative workaround is to contact the vendor sending the invoice and ask them to please correct the invoice and re-send it.
+The issue is rare and the reasons for not being able to save the changes to the rejected invoice have not yet been isolated.",Unexpected error after editing a rejected invoice
+"Invoice Portal sends files from a static IP address, 104.41.224.26.
+Level of Complexity
+Easy",Sending from static or dynamic IP address
+"Please find the Invoice Portal help file
+here https://docshield.kofax.com/InvoicePortal/en_US/help/RSI_InvoicePortal_help/c_welcometoinvoiceportal.html",Invoice Portal Help File
+"Invoice Portal online help file
+Invoice Portal on the Kofax website
+Invoice Portal datasheet",Reference
+"Goal
+Use the section below to describe the goal of the how-to. You might want to offer prerequisites that must be met before the user begins the task, such as previous how-to's, configuration or product setting requirements.
+After completing this how-to you will know how to create an invoice using Invoice Portal.
+Use each step section to describe the instructions needed to achieve the goal.
+First Step
+Begin by selecting Invoice > Create New. You will get to this page:
+The first step in creating an invoice is to seek out the recipient in the
+Search
+field. You can do this by using the search function. We recommend that you search on the recipient's organization number. Searching on the Company name also works.
+Here's How it looks when you get a hit on your search:
+If This is a recipient that you will invoice often, you can click in the Star icon on the far left. The receiver will then be saved. This will prevent you from having to perform a search on the next billing.
+Recipients that you do not get a hit on but who can receive e-invoices
+If you do not get a hit on the recipient and you know that they can receive an e-invoice, please contact Kofax or your Kofax partner. Your recipient need to be added to a register with Kofax Invoice Portal. We need to know your recipient's name, corporate identity number and which VAN operator they receive invoices from.
+Many recipients choose to use a third-party operator to manage conversion between different formats, communication, security and traffic monitoring. VAN stands for Value Added Network and is an operator of business to business (B2B) traffic. The Operators have interconnection agreements between each other, making mass connection smooth.
+Recipients who are unable to receive e-invoices
+If you have a customer who is not able to receive e-invoices but who can receive by e-mail (PDF invoice), you can still invoice the customer via the Invoice portal. In order for these receivers to be searchable, the first step is to create a customer card for the recipient.
+Here's How to do it: [SEPARATE ARTICLE - add link]
+Second Step
+To be able to create an invoice for your recipient, select/click the recipient listed when you complete your search, then you will be taken to this page:
+Fill in the fields that you need to enter information in. Select the little question marks next to some fields to get an explanation.
+Invoice Information and Vendor contact information
+Invoice number Fill in your invoice number, both numbers and letters can be used
+Invoice Type Select a debit or credit note
+Issue Date Automatically filled in when the invoice is created
+Currency Currency for the invoice amounts
+Language Which language should the invoice fields have
+Supplier contact Your contact person for this invoice
+Email Address Contact person's email address
+Mobile Phone Contact person's mobile number
+Buyer's contact information and invoice header information
+Buyer contact Your customer's contact person for this invoice
+Email Address Customer's contact email address
+Mobile Phone Customer's contact person's mobile number
+Free Text Space for entering information as free text, a message for the customer on the invoice
+Buyer order number Customer's order number for this invoice
+Buyers Reference 1 Customer reference regarding this invoice. Some customers require, for example, that you specify a cost center, then it must be stated in this box. If a reference is required, the recipient should inform you of this.
+Payment specification
+Days left until due date Payment must be made within the number of due dates
+Due Date The Payment must be made at the latest on the due date. The Date is filled in automatically depending on how many due dates you specify.
+Payment Reference (OCR) A numerical code that facilitates automatic accounting of payments
+Payment terms - Your conditions of use for this customer
+Delay terms Your terms In case of late payment
+Delivery Information
+Here you fill in the delivery information. If you click
+""More Details""
+You can also fill in the shipping address and carrier.
+Invoice lines
+Above you will find an example of how an Invoice line might look like.
+Line The Line number of the invoice line is automatically assigned as a sequential number
+Description The Item that you are invoicing
+Supplier Art.no Item number of the product/service
+Quantity Quantity
+Unit For example, if it is an object you invoice, you choose ""Pcs"". Should you invoice for a service, you can use the number of hours
+Price Price in your chosen currency
+Unit Price Base The Quantity the price is based on
+Discount% If there would be a discount on the item, it is listed here. However, This only works as a ledger for the rebate. Therefore, you need to deduct the amount on the invoice line itself. If it is a 50% discount and the painting really cost 1000 kr you have to indicate that the price is 500 kr.
+Line Amount The Invoice portal calculates this using the Quantity * Price
+Vat Which VAT that is applicable on the line. If the VAT is 0% then you have to check ""Tax exemption""
+Tax exemption text If you have checked the "" Tax exemption"" then you must also indicate the reason for this. A short sentence is Enough.
+f you are going to bill for several different articles You can add more lines by clicking
+""New line"".
+Invoice Attachments
+This is where it is possible to attach files/documents. Such as for instance a packing slip.
+Summary
+At the bottom of the page, the invoice is automatically summed up. Here you can also calculate amount rounding by using the
+Calculate
+button.
+Almost done!
+Below the invoice summary area you will find these important buttons.
+Save If You don't want to send the invoice at once, you can save it. It is stored in Drafts. You can find your draft under
+Invoice > Draft
+. You can at a later time access the invoice again and send it.
+Check Press this button to make Invoice Portal verify that you have filled in the required fields on the invoice.
+PDF - By selecting the PDF button, the invoice is saved as a PDF file. This also allows you to preview the invoice before sending it.
+Send Select this button to send the invoice to the recipient
+Cancel If you do not want to save or send the invoice, click
+""Cancel"".
+Then delete the invoice.
+Done!
+After you click
+Send
+Is the invoice sent! If you have any questions or problems, you can always contact support! Contact details can be found on the cover page.
+What's Next
+Use the section below to describe additional considerations that were omitted for brevity and to guide the reader to further how-to's.
+This how-to guide outlines how to create an invoice in the Invoice Portal.
+Read more about Recipients:
+Invoice Portal online help file
+https://docshield.kofax.com/InvoicePortal/en_US/help/RSI_InvoicePortal_help/c_welcometoinvoiceportal.html
+--> Look up ""Customers""
+Recipients that you do not get a hit on but who can receive e-invoices. [ADD LINK]
+Recipients who are unable to receive e-invoices. [ADD LINK]",How to create an invoice
+"The user need to verify their email address in order to gain access to the system. The verification email is sent out shortly after account creation and only valid for a few days. Remove and add the user again to receive a nev verification email. This is something the local Invoice Portal administrator user normally does (adding new users).
+Please see references below for other type of login-issues.
+Level of Complexity
+Easy",Can not log in to Invoice Portal
+"The sending party (supplier) receives an error message when invoices are stopped due to errors.
+When invoices are sent via Peppol all receiving VAN-operators (like Invoice Portal) are obliged to receive the invoice and deliver it to the recipient, in this case the error message is sent to the recipient.
+Invoices can not be deleted from Invoice Portal when they have already been exchanged (e.g. sent or received), it is equivalent to a paper invoice and need to remain in the Invoice Portal archive for audit purposes.
+Note: Invoices which has
+not been sent
+to a recipient can be deleted. So deletion is possible before sending the invoice.
+Level of Complexity
+Easy",Can you remove sent Invoices from InvoicePortal?
+"1. Lost password
+Use the ""Forgot your password?"" link on the login page. Then enter your email address and a password recovery process is started.
+Remember to check the Spam folder for the reminder email!
+2. Lost account
+If you have lost access to the actual account you use to access Invoice Portal you need to contact your Invoice Portal administrator to have them recreate your user in the system.
+3. Lost Invoice Portal system administrator account
+Speak with your local IT if the Invoice Portal local admin left the company, you will need to access their old email inbox to recover the password. Then create a new Invoice Portal administrator once you have logged in.
+Alternatively go to the
+Kofax Community
+and reach out to Kofax for assistance.
+Level of Complexity
+Moderate",Lost password
+"Two scenarios described below ""two-factor application missing"" and ""two-factor application temporarily unavailable"".
+2FA application not working or missing
+If the actual authenticator application has disappeared or the mobile phone is lost/broken.
+Start by reinstalling the authentication application, any of the listed in this section of the Invoice Portal help
+https://docshield.kofax.com/InvoiceP...ntication.html
+Follow these steps to add the Invoice Portal account to the authenticator app.
+Log in to Invoice Portal using your username and password.
+Since the application providing the temporary two-factor codes is unavailable, select ""Cannot get a code to enter"".
+When prompted, use one of the
+recovery codes
+created the first time the 2FA was installed to restore the account.
+Enter a
+recovery code
+and press ""Verify"". Then follow the instructions on the page, e.g. scan the QR code with the authenticator app on your mobile device to create a new account, then enter the code generated by the newly created authenticator account.
+Store the new recovery codes safely on your computer.
+Make really sure to store the new
+recovery codes
+in a safe place, press ""Done"" and the two-factor authentication is now restored.
+Please note that the original
+recovery codes
+expire when one of them is used for restoring the account and they are replaced by three new
+recovery codes
+. Kofax recommend storing the codes in
+more than one
+safe place.
+2FA temporarily unavailable
+If the authenticator application or mobile phone is temporarily unavailable.
+Retrieve one of the
+recovery codes
+you stored when the two-factor application was set up. Please note that each code can only be used once.
+Level of Complexity
+High",2FA - Two-factor Authentication stopped working
+"Open Invoices Manager.
+From the top menu, select Plugins> then AutoValue Configuration
+Then select the Invoice profile you wish to change>Then select InvoiceDate>Then click on the radio button next to Current date. This will change the InvoiceDate field on ALL Invoices in this profile.
+Level of Complexity
+Easy",Invoice Date in verify; could it be changed to today's date?
+"Check XML file on the ""queued"" invoice to see if you can find the party identifiers.
+If partyidentifiers can be found, check Registry if those are added.
+In some cases the recipient is added after the invoice is sent. In those cases you can resend the invoice.
+Level of Complexity
+Easy / Moderate",Invoice stuck in queue
+"To send tax exempt invoices without the use of VAT/Tax ID numbers, make changes in the invoice's Payment details and in the Invoice lines.
+Payment details
+Under the invoices
+Payment details
+select/expand
++More details
+, select ""None"" for both Supplier's and Buyer's VAT/Tax ID, then select the box
+Tax exempt
+and write ""No tax"" (or similar) in the
+Tax exemption text
+field.
+Note: If the recipient is receiving their invoices via Peppol there will be an additional field for selecting ""Tax exemption reason code"" where it is possible to select from a list of pre-defined reasons, select the one applicable to your invoice.
+Invoice lines
+The
+Invoice lines
+must also clearly be set to ""no taxation"" so make sure to select an applicable
+Tax category
+, for instance ""Service outside scope of tax""
+Level of Complexity
+Moderate",Not able to create an invoice without a VAT/Tax ID
+"Please read more about two-factor authentication in the Invoice Portal online documentation:
+https://docshield.kofax.com/InvoiceP...ntication.html
+Level of Complexity
+Easy",Problems configuring the 2FA - Two-factor Authentication

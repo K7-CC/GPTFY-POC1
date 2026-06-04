@@ -38,10 +38,13 @@ trigger CaseResolvedTrigger on Case_Resolved__e (after insert) {
         if (existing.Status == 'Closed') {
             continue;
         }
+        String resolutionText = CaseResolutionController.sanitizeRecommendation(
+            existing.Description
+        );
         toUpdate.add(new Case(
             Id = existing.Id,
             Status = 'Closed',
-            Resolution__c = existing.Description == null ? '' : existing.Description
+            Resolution__c = resolutionText == null ? '' : resolutionText
         ));
     }
 

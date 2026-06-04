@@ -20,6 +20,78 @@ public without sharing class CaseResolutionController {
     private static final Integer SUBJECT_MAX_LENGTH = 255;
 
     /**
+     * Shown when GPTfy returns a junk/no-match style answer. Keep in sync with
+     * caseResolutionAssistant.js NO_ANSWER_MESSAGE.
+     */
+    public static final String NO_ANSWER_MESSAGE =
+        'Thank you for your question. We could not find a specific answer in our knowledge base at this time. ' +
+        'Our support team will review your case and follow up with you shortly.';
+
+    /**
+     * Shown when Description is still empty after the LWC poll window (GPTfy still
+     * processing or failed). Keep in sync with caseResolutionAssistant.js
+     * TIMEOUT_MESSAGE.
+     */
+    public static final String TIMEOUT_MESSAGE =
+        'Thank you for your patience. We are still processing your question. ' +
+        'Our support team has your case and will follow up with you shortly.';
+
+    private static final List<String> LOW_QUALITY_CONTAINS = new List<String>{
+        'didn\'t get that',
+        'did not get that',
+        'what was that',
+        'can you repeat',
+        'can you rephrase',
+        'can you say it again',
+        'can you say that again',
+        'say that again',
+        'say it again',
+        'say that one more time',
+        'one more time?',
+        'one more time',
+        'missed what you said',
+        'sorry, what was',
+        'sorry, can you',
+        'sorry, i didn\'t',
+        'sorry, i did not'
+    };
+
+    private static final Set<String> LOW_QUALITY_RESPONSES = new Set<String>{
+        'what was that?',
+        'what was that',
+        'huh?',
+        'sorry, i don\'t know',
+        'sorry, i do not know',
+        'i don\'t know',
+        'i do not know',
+        'no answer found',
+        'no answer available',
+        'unable to answer',
+        'unable to find an answer',
+        'could not find an answer',
+        'couldn\'t find an answer',
+        'could not find a match',
+        'couldn\'t find a match',
+        'no relevant information found',
+        'no relevant results found',
+        'i\'m not sure',
+        'i am not sure',
+        'i cannot answer',
+        'i can\'t answer',
+        'i didn\'t get that. can you repeat?',
+        'i didn\'t get that. can you say it again?',
+        'sorry, i didn\'t get that. can you rephrase?',
+        'sorry, what was that?',
+        'sorry, can you say that again?',
+        'sorry, can you say that again',
+        'can you say that again?',
+        'can you say that again',
+        'say that one more time?',
+        'say that one more time',
+        'i missed what you said. what was that?'
+    };
+
+    /**
      * Inserts a new Case from the guest's form submission.
      * Origin = 'Web' is critical: the record-triggered Flow filters on it.
      *
@@ -85,7 +157,7 @@ public without sharing class CaseResolutionController {
 
     /**
      * Returns the Case.Description if populated by GPTfy, or null while empty.
-     * Polled by the LWC every 2.5 seconds for up to 30 seconds.
+     * Polled by the LWC every 2.5 seconds for up to 90 seconds.
      *
      * Returns null on any error so that the LWC's polling loop continues
      * cleanly instead of surfacing a transient query failure to the user.
@@ -105,10 +177,41 @@ public without sharing class CaseResolutionController {
             if (String.isBlank(c.Description)) {
                 return null;
             }
-            return c.Description;
+            return sanitizeRecommendation(c.Description);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * Maps low-quality GPTfy/RAG outputs to a polite guest-facing message.
+     * Returns null when the raw text is blank so polling can continue.
+     */
+    public static String sanitizeRecommendation(String raw) {
+        if (String.isBlank(raw)) {
+            return null;
+        }
+        String trimmed = raw.trim();
+        if (isLowQualityResponse(trimmed)) {
+            return NO_ANSWER_MESSAGE;
+        }
+        return trimmed;
+    }
+
+    private static Boolean isLowQualityResponse(String text) {
+        String normalized = text.toLowerCase().replaceAll('\\s+', ' ').trim();
+        if (LOW_QUALITY_RESPONSES.contains(normalized)) {
+            return true;
+        }
+        if (normalized.length() > 150) {
+            return false;
+        }
+        for (String fragment : LOW_QUALITY_CONTAINS) {
+            if (normalized.contains(fragment)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

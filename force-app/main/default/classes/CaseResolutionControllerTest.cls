@@ -92,6 +92,94 @@ private class CaseResolutionControllerTest {
     }
 
     @IsTest
+    static void getRecommendation_replacesLowQualityRagResponse() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'What was that?'
+        );
+        insert c;
+
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(c.Id);
+        Test.stopTest();
+
+        System.assertEquals(
+            CaseResolutionController.NO_ANSWER_MESSAGE,
+            result,
+            'Unprofessional RAG text should be replaced with the polite no-answer message'
+        );
+    }
+
+    @IsTest
+    static void sanitizeRecommendation_returnsNullForBlank() {
+        System.assertEquals(null, CaseResolutionController.sanitizeRecommendation(null));
+        System.assertEquals(null, CaseResolutionController.sanitizeRecommendation('   '));
+    }
+
+    @IsTest
+    static void getRecommendation_replacesConversationalRagFailure() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'I didn\'t get that. Can you repeat?'
+        );
+        insert c;
+
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(c.Id);
+        Test.stopTest();
+
+        System.assertEquals(CaseResolutionController.NO_ANSWER_MESSAGE, result);
+    }
+
+    @IsTest
+    static void getRecommendation_replacesSayThatOneMoreTimeRagFailure() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'Say that one more time?'
+        );
+        insert c;
+
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(c.Id);
+        Test.stopTest();
+
+        System.assertEquals(CaseResolutionController.NO_ANSWER_MESSAGE, result);
+    }
+
+    @IsTest
+    static void getRecommendation_replacesSayThatAgainRagFailure() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'Sorry, can you say that again?'
+        );
+        insert c;
+
+        Test.startTest();
+        String result = CaseResolutionController.getRecommendation(c.Id);
+        Test.stopTest();
+
+        System.assertEquals(CaseResolutionController.NO_ANSWER_MESSAGE, result);
+    }
+
+    @IsTest
+    static void sanitizeRecommendation_preservesValidAnswer() {
+        String answer = 'Restart the service, then clear the cache folder.';
+        System.assertEquals(
+            answer,
+            CaseResolutionController.sanitizeRecommendation(answer),
+            'Valid KB answers must pass through unchanged'
+        );
+    }
+
+    @IsTest
     static void getRecommendation_returnsTextWhenDescriptionPopulated() {
         Case c = new Case(
             Origin      = 'Web',
@@ -138,6 +226,29 @@ private class CaseResolutionControllerTest {
             'CaseResolvedTrigger should close the Case via system context');
         System.assertEquals('AI answer text', closed.Resolution__c,
             'Description should be copied verbatim into Resolution__c');
+    }
+
+    @IsTest
+    static void resolveCase_sanitizesLowQualityDescriptionOnClose() {
+        Case c = new Case(
+            Origin      = 'Web',
+            Status      = 'New',
+            Subject     = 'Test',
+            Description = 'What was that?'
+        );
+        insert c;
+
+        Test.startTest();
+        CaseResolutionController.resolveCase(c.Id);
+        Test.stopTest();
+
+        Case closed = [SELECT Status, Resolution__c FROM Case WHERE Id = :c.Id];
+        System.assertEquals('Closed', closed.Status);
+        System.assertEquals(
+            CaseResolutionController.NO_ANSWER_MESSAGE,
+            closed.Resolution__c,
+            'Low-quality Description should not be stored on Resolution__c'
+        );
     }
 
     @IsTest

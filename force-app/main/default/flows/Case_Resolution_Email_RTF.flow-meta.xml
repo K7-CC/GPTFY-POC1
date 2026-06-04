@@ -146,9 +146,16 @@
     <textTemplates>
         <name>Resolution_Email_Body</name>
         <isViewedAsPlainText>true</isViewedAsPlainText>
-        <text>Your question has been resolved. Here is the answer:
+        <text>Hello,
 
-{!Resolution_For_Email}</text>
+Thank you for contacting us. Please find our response to your inquiry below:
+
+{!Resolution_For_Email}
+
+We hope this information addresses your question. If you need further assistance, please reply to this email.
+
+Best regards,
+Support Team</text>
     </textTemplates>
     <variables>
         <name>Fault_Message</name>

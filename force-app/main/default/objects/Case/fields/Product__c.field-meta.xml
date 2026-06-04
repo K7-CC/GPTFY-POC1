@@ -11,19 +11,19 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>GPTFY</fullName>
+                <fullName>E-Invoicing</fullName>
                 <default>false</default>
-                <label>GPTFY</label>
+                <label>E-Invoicing</label>
             </value>
             <value>
-                <fullName>DATA MASKER</fullName>
+                <fullName>TotalAgility</fullName>
                 <default>false</default>
-                <label>DATA MASKER</label>
+                <label>TotalAgility</label>
             </value>
             <value>
-                <fullName>CLOUD COMPLIANCE</fullName>
+                <fullName>PowerPDF</fullName>
                 <default>false</default>
-                <label>CLOUD COMPLIANCE</label>
+                <label>PowerPDF</label>
             </value>
         </valueSetDefinition>
     </valueSet>

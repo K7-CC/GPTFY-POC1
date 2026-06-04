@@ -15,7 +15,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` partial / needs verification · `[-
 
 - [x] Guest-facing LWC `caseResolutionAssistant` (form + 6 UI states)
 - [x] LWC field validation (first/last name, email regex, question)
-- [x] LWC polling loop for AI answer (12 attempts × 2.5s + fallback message)
+- [x] LWC polling loop for AI answer (18 attempts × 2.5s + fallback message)
 - [x] Apex controller `CaseResolutionController` (`without sharing`, guest-safe)
   - [x] `createSupportCase` (sets `Origin='Web'`)
   - [x] `getRecommendation` (polled by LWC)
@@ -31,15 +31,15 @@ Legend: `[x]` done · `[ ]` pending · `[~]` partial / needs verification · `[-
 
 ### B. Configuration / unblockers (HIGH PRIORITY)
 
-- [ ] **Update `Case.Product__c` picklist values to match POC scope**
+- [x] **Update `Case.Product__c` picklist values to match POC scope**
   - Replace `GPTFY` / `DATA MASKER` / `CLOUD COMPLIANCE`
   - Add: `E-Invoicing`, `TotalAgility`, `PowerPDF`
-- [ ] **Activate `Case_Resolution_RTF` flow** (currently `<status>Draft</status>`)
-- [ ] Verify GPTfy `promptRequestId` (`9cf7e95aacf31f5730a118c90c6fda4676843`) points to a prompt that:
-  - [ ] Uses `Case.Product__c` to filter KB retrieval
-  - [ ] Writes back into `Case.Description`
-- [ ] Confirm Experience Cloud (LWR) site exposes `caseResolutionAssistant`
-- [ ] Confirm Guest User profile is assigned `gptfysupport_Guest_Access`
+- [x] **Activate `Case_Resolution_RTF` flow** (Active in org, v4)
+- [x] Verify GPTfy `promptRequestId` (`9cf7e95aacf31f5730a118c90c6fda4676843`) points to a prompt that:
+  - [x] Uses `Case.Product__c` to filter KB retrieval
+  - [x] Writes back into `Case.Description`
+- [x] Confirm Experience Cloud (LWR) site exposes `caseResolutionAssistant`
+- [x] Confirm Guest User profile is assigned `gptfysupport_Guest_Access`
 
 ### C. Content / data (PHASE 1 — TUNGSTEN DELIVERABLES)
 
@@ -105,4 +105,4 @@ Legend: `[x]` done · `[ ]` pending · `[~]` partial / needs verification · `[-
 
 ---
 
-_Last updated: 2026-06-03 — agent-resolve path now drafts a linked Knowledge article on Save_
+_Last updated: 2026-06-04 — Section B configuration unblockers verified in org_

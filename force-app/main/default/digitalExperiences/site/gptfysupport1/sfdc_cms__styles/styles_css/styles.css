@@ -1,0 +1,28 @@
+/*
+ * Your global styles here
+ */
+html,
+body {
+    height: 100%;
+}
+
+html {
+    background-color: #2c5282 !important;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100%;
+    background-color: #2c5282 !important;
+}
+
+/* Prevent fixed-height section backgrounds from cutting off mid-page */
+main .community_layout-section,
+.community_layout-section,
+[class*='community_layout-section'] {
+    height: auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+}

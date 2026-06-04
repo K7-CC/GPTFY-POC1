@@ -1,0 +1,257 @@
+﻿Question,Answer,Source_URL,Content_Type
+Lifecycle Policies and End of Support Dates,"The
+Tungsten Automation Software Lifecycle Policy
+describes product release types and provides a policy on the related Support timeline for products.
+The
+Tungsten Automation Printix Client Lifecycle Support Policy
+describes the policy on the lifecycle and support policy for the Tungsten Printix Client.
+The
+Product Release and Sunset Schedules
+file is a table of Tungsten Automation products and their associated Support timelines.
+Last updated on April 29, 2026.
+The
+Tungsten Automation MFP/Network Scanner Support Policy
+describes MFP/Network Scanner devices that work with relevant Tungsten Automation products and provides policy on their related Support timelines.
+The
+MFP Support Matrix
+article contains a table of MFP/Network Scanner devices that work with relevant products and their associated Support timeline.
+The
+MFD & Productivity Supported Devices Information
+article contains the latest MFD & Productivity Supported Devices file(s).
+The Tungsten Automation Support
+Portal Case Data and Attachment Policy
+article outlines our current portal case data and attachment policy details.",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce1/page/19235.html,KB_Article
+Power PDF Product Release Information,"Latest 2026.2 Releases
+For Mac
+Description
+Release Date
+Download
+Power PDF 2026.2 (2026.2, Initial Release) for Mac
+April 27, 2026
+Available for download from the
+Tungsten Automation Fulfillment Site
+.
+Power PDF 2026.2 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 2025.3 Releases
+For Windows
+Description
+Release Date
+Download
+Power PDF 2025.3.5 (2025.3, Update 5) for Windows
+June 02, 2026
+Available for download from the
+Tungsten Automation Fulfillment Site
+.
+Active M&S contract required.
+Power PDF 2025.3 (2025.3, Initial Release) for Windows
+November 11, 2025
+Power PDF 2025.3 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 5.1 Releases
+For Mac
+Description
+Release Date
+Download
+Power PDF 5.1 R2 for Mac
+November 12, 2024
+Available for download from the
+Tungsten Automation Fulfillment Site
+.
+Power PDF 5.1 for Mac
+August 13, 2024
+Power PDF 5.1 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+For Windows
+Description
+Release Date
+Download
+Power PDF 5.1.1.17 Advanced Volume (5.1, Service Pack 1, Fix Pack 17) for Windows
+May 01, 2026
+Available for download from the
+Tungsten Automation Fulfillment Site.
+Active M&S contract required.
+Power PDF 5.1 for Windows
+May 30, 2024
+Power PDF 5.1 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 5.0 Releases
+For Mac
+Description
+Release Date
+Download
+Power PDF 5.0 R3 for Mac
+May 14, 2024
+Available for download from the
+Tungsten Automation Fulfillment Site
+.
+Power PDF 5.0 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+For Windows
+This product reached
+Limited Support
+on September 30, 2025.
+Description
+Release Date
+Download
+Power PDF 5.0.0.21 Advanced Volume (5.0, Fix Pack 21) for Windows
+May 27, 2024
+Available for download from the
+Tungsten Automation Fulfillment Site
+.
+Active M&S contract required.
+Power PDF 5.0 for Windows
+July 01, 2022
+Power PDF 5.0 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 4.2 Releases
+For Mac
+This product reached
+End of Support
+on September 23, 2025.
+Description
+Release Date
+Download
+Power PDF 4.2 R2 for Mac
+July 22, 2024
+Available for download from the
+Tungsten Automation Fulfillment Site
+.
+Power PDF 4.2 for Mac
+September 23, 2021
+Power PDF 4.2 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 4.1 Releases
+For Mac
+This product reached
+End of Support
+on February 09, 2025.
+Description
+Release Date
+Power PDF 4.1 R2 for Mac
+This R2 release corrects a licensing issue not a program issue. If you have installed and are successfully using the PPDF 4.1 for Mac release, you do not need to install this R2 release.
+May 25, 2021
+Power PDF 4.1 for Mac
+February 09, 2021
+Power PDF 4.1 for Mac product documentation is available for download from the
+Power PDF 4.1 for Mac
+package found in the
+Tungsten Automation Fulfillment Site
+.
+Kofax Power PDF 4.1 for Mac - Technical Specifications
+(December 2020)
+For Windows
+This product reached
+End of Support
+on September 23, 2025.
+Description
+Release Date
+Power PDF 4.1.0.30 Advanced Volume (4.1, Fix Pack 30) for Windows
+April 29, 2025
+Power PDF 4.1 for Windows
+August 16, 2021
+Power PDF 4.1 for Windows - Including Release Notes and Technical Specifications
+(hosted)",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce4/page/21904.html,KB_Article
+Getting MainEngineThread is returning 1603 Error in MSI Logs during installation of PowerPDF,"The Client moved the installation files (Deployment Script, *.MST) to a location other than the default and forgot to copy DATA1.CAB to the new location. DATA1.CAB is the PowerPDF installation program.
+Copied the DATA1.CAB file to a new location, and PowerPDF installed properly.",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce11/page/45172.html,KB_Article
+SharePoint connector doesn't see all folders in Power PDF,"In the contents, select the Settings of the library/folder they would like to check/set. Set the Content Types section, containing ""Document"" Content type in its list (there can be a list but the Document must be among them). If not, select ""Advanced settings"" and, in the Advanced Settings window, set the ""Allow management content types"" radio button to ""Yes"". After saving the setting the Content Types will appear in the Settings window, and the Folder/Library will appear in Power PDF SharePoint connector.
+Power PDF version should be on minimum versions of 20205.3 and 5.1.1.14",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce11/page/44614.html,KB_Article
+Power PDF Essential Eight White Paper,"Kofax and the Power PDF Solution adhere to the principles in consideration of the essential Eight core secure guidelines,
+Please find attached our white paper.",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce8/page/32476.html,KB_Article
+Who to contact for technical support on OEM versions of Kofax products.,"If your license for Power PDF, Omnipage, or PaperPort was included with the purchase of a product from a 3rd party, such as a Scanner or Printer, you must contact that manufacturer for technical support. Due to contractual requirements Kofax is unable to provide direct technical support on OEM versions of our products.",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce4/page/32824.html,KB_Article
+Power PDF Availability on Google Play Store,"We are aware that Power PDF is currently not available on the Google Play Store. Our team is actively investigating this issue and working towards a resolution.
+An update will be provided in this Knowledge Base article once more information is available.
+We appreciate your patience and understanding while this is being resolved.",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce11/page/44976.html,KB_Article
+How to collect x32 and x64 bit log files for Power PDF 2025.3,"Purpose
+One of the most effective ways to troubleshoot Power PDF issues is by collecting logs for our support team to review.
+Before beginning, ensure that the File Name extension option is selected under the View option in Folder Options in Windows Explorer.
+Open Folder
+à
+View
+à
+Check mark view File name extensions
+Objective:
+When Power PDF logging is needed, the log files for both x32 and x64 bit processing should be enabled
+Step 1
+Browse to the default directory where Power PDF software is installed on your system.
+Typically, the file location would be:
+C:\Program Files\Tungsten\Power PDF 2025
+Step 2
+2.1 If you see a file by name recdiag_log.ini with size 1 KB you may rename the file to recdiag_log_old.ini
+2.2 Search and select RECDIAG_LOG.IN_ of size 13 KB at location C:\Program Files\Tungsten\Power PDF 2025
+then rename the file to 'RECDIAG_LOG.ini'.
+Note
+– In some cases, renaming this file will require admin rights, but this depends on the customers environment and user permissions
+32-Bit log steps
+To also enable x86-bit logging mode, continue with the steps below and first b
+rowse to the directory where Power PDF is installed on your system.
+Typically, the file location would be C:\Program Files\Tungsten\Power PDF 2025\x86
+Step 3
+If you see a file by name recdiag_log.ini with a size of 1 KB you may rename the file to recdiag_log_old.ini
+Step 4
+Search and select RECDIAG_LOG.IN_ of size 13 KB at location
+C:\Program Files\Tungsten\Power PDF 2025\x86
+then rename the file to 'RECDIAG_LOG.ini'.
+Step 5
+5.1 Once the 'RECDIAG_LOG.ini' file is in place in both locations, create a folder named 'RECDIAG' in the C:\TEMP folder for the logs to be written out to
+5.2 If this folder is not manually created before testing, the logs will not be created (C:\temp\recdiag).
+5.3 Power PDF should start writing logs to C:\temp\recdiag as soon as the software is launched.
+Step 6 -
+Reproduce the issue and note the document name, date and time of the issue.
+Collect the logs from C:\temp\recdiag after reproducing the issue successfully.
+Share the logs with our support team.
+Step 7
+When testing is complete, be sure to rename the file 'RECDIAG_LOG.ini' back to 'RECDIAG_LOG.in_' so Power PDF does not continue logging,",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce6/page/21649.html,KB_Article
+I have questions regarding a software demo or general questions regarding product features,"Please go to:
+https://www.tungstenautomation.de/contact-us/product-inquiry
+And raise your questions directly to our products teams.",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce9/page/38510.html,KB_Article
+Power PDF Product Documentation,"Latest 2026.2 Releases
+For Mac
+Power PDF 2026.2 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 2025.3 Releases
+For Windows
+Power PDF 2025.3 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 5.1 Releases
+For Mac
+Power PDF 5.1 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+For Windows
+Power PDF 5.1 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 5.0 Releases
+For Mac
+Power PDF 5.0 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+For Windows
+This product reached
+Limited Support
+on September 30, 2025.
+Power PDF 5.0 for Windows product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 4.2 Releases
+For Mac
+This product reached
+End of Support
+on September 23, 2025.
+Power PDF 4.2 for Mac product documentation - Including Release Notes and Technical Specifications
+(hosted)
+Latest 4.1 Releases
+For Mac
+This product reached
+End of Support
+on February 09, 2025.
+Power PDF 4.1 for Mac product documentation is available for download from the
+Power PDF 4.1 for Mac
+package found in the
+Kofax Fulfillment Site
+.
+Kofax Power PDF 4.1 for Mac - Technical Specifications
+(December 2020)
+For Windows
+This product reached
+End of Support
+on September 23, 2025.
+Power PDF 4.1 for Windows documentation - including Release Notes and Technical Specifications
+(hosted)",https://knowledge.tungstenautomation.com/bundle/z-kb-articles-salesforce3/page/21864.html,KB_Article
