@@ -33,6 +33,19 @@
             </div>
         </template>
 
+        <div class="slds-form-element cra-field slds-m-top_x-small">
+            <div class="slds-form-element__control">
+                <lightning-input
+                    type="checkbox"
+                    label="Update Knowledge Base"
+                    name="updateKb"
+                    checked={updateKnowledgeBase}
+                    onchange={handleUpdateKbChange}
+                    disabled={isSaving}
+                ></lightning-input>
+            </div>
+        </div>
+
         <div class="slds-text-align_right cra-actions">
             <lightning-button
                 label="Cancel"

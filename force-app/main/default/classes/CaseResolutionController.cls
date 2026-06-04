@@ -53,7 +53,8 @@ public without sharing class CaseResolutionController {
         'sorry, what was',
         'sorry, can you',
         'sorry, i didn\'t',
-        'sorry, i did not'
+        'sorry, i did not',
+        'no answer found in the knowledge base'
     };
 
     private static final Set<String> LOW_QUALITY_RESPONSES = new Set<String>{

@@ -1,11 +1,10 @@
 /**
  * Unit tests for CaseResolveActionController.
  *
- * Exercises the saveResolution(Id, String) entry point under the four
+ * Exercises the saveResolution(Id, String, Boolean) entry point under four
  * original branches (happy path, null Id guard, blank text guard, DML
- * failure path) plus three new branches that cover the Knowledge
- * article side-effect: create, update-in-place, and the case-closes-
- * even-when-KB-fails isolation guarantee.
+ * failure path) plus branches for createKb=true (article create / update /
+ * KB-failure isolation) and createKb=false (skip KB entirely).
  */
 @IsTest
 private class CaseResolveActionControllerTest {
@@ -22,7 +21,7 @@ private class CaseResolveActionControllerTest {
         String solution = 'Restart the service and clear the cache.';
 
         Test.startTest();
-        CaseResolveActionController.saveResolution(c.Id, solution);
+        CaseResolveActionController.saveResolution(c.Id, solution, false);
         Test.stopTest();
 
         Case after = [SELECT Status, Resolution__c FROM Case WHERE Id = :c.Id];
@@ -43,7 +42,7 @@ private class CaseResolveActionControllerTest {
         insert c;
 
         Test.startTest();
-        CaseResolveActionController.saveResolution(c.Id, 'New text');
+        CaseResolveActionController.saveResolution(c.Id, 'New text', false);
         Test.stopTest();
 
         Case after = [SELECT Status, Resolution__c FROM Case WHERE Id = :c.Id];
@@ -57,7 +56,7 @@ private class CaseResolveActionControllerTest {
         Boolean threw = false;
         try {
             Test.startTest();
-            CaseResolveActionController.saveResolution(null, 'Some text');
+            CaseResolveActionController.saveResolution(null, 'Some text', false);
             Test.stopTest();
         } catch (AuraHandledException e) {
             threw = true;
@@ -72,7 +71,7 @@ private class CaseResolveActionControllerTest {
 
         Boolean threwForNull = false;
         try {
-            CaseResolveActionController.saveResolution(c.Id, null);
+            CaseResolveActionController.saveResolution(c.Id, null, false);
         } catch (AuraHandledException e) {
             threwForNull = true;
         }
@@ -80,7 +79,7 @@ private class CaseResolveActionControllerTest {
 
         Boolean threwForEmpty = false;
         try {
-            CaseResolveActionController.saveResolution(c.Id, '   ');
+            CaseResolveActionController.saveResolution(c.Id, '   ', false);
         } catch (AuraHandledException e) {
             threwForEmpty = true;
         }
@@ -98,7 +97,7 @@ private class CaseResolveActionControllerTest {
         Boolean threw = false;
         try {
             Test.startTest();
-            CaseResolveActionController.saveResolution(deletedId, 'solution');
+            CaseResolveActionController.saveResolution(deletedId, 'solution', false);
             Test.stopTest();
         } catch (AuraHandledException e) {
             threw = true;
@@ -120,7 +119,7 @@ private class CaseResolveActionControllerTest {
 
         Test.startTest();
         CaseResolveActionController.SaveResult result =
-            CaseResolveActionController.saveResolution(c.Id, solution);
+            CaseResolveActionController.saveResolution(c.Id, solution, true);
         Test.stopTest();
 
         System.assertEquals(true, result.caseClosed, 'caseClosed flag must be set');
@@ -162,13 +161,13 @@ private class CaseResolveActionControllerTest {
 
         Test.startTest();
         CaseResolveActionController.SaveResult first =
-            CaseResolveActionController.saveResolution(c.Id, 'Initial draft answer.');
+            CaseResolveActionController.saveResolution(c.Id, 'Initial draft answer.', true);
 
         c.Status = 'Working';
         update c;
 
         CaseResolveActionController.SaveResult second =
-            CaseResolveActionController.saveResolution(c.Id, 'Refined final answer.');
+            CaseResolveActionController.saveResolution(c.Id, 'Refined final answer.', true);
         Test.stopTest();
 
         System.assertEquals(true, first.articleCreated, 'First call should create');
@@ -196,6 +195,37 @@ private class CaseResolveActionControllerTest {
     }
 
     @IsTest
+    static void saveResolution_skipsKbWhenCreateKbFalse() {
+        Case c = new Case(
+            Origin  = 'Web',
+            Status  = 'New',
+            Subject = 'Skip KB test'
+        );
+        insert c;
+
+        Test.startTest();
+        CaseResolveActionController.SaveResult result =
+            CaseResolveActionController.saveResolution(c.Id, 'Resolution only, no KB.', false);
+        Test.stopTest();
+
+        System.assertEquals(true, result.caseClosed, 'Case must still be closed');
+        System.assertEquals(null, result.articleId,
+            'No article should be created when createKb is false');
+        System.assertEquals(null, result.articleCreated,
+            'articleCreated must be null when createKb is false');
+        System.assertEquals(null, result.articleWarning,
+            'No warning should appear when createKb is false');
+
+        Integer articleCount = [
+            SELECT COUNT()
+            FROM CaseArticle
+            WHERE CaseId = :c.Id
+        ];
+        System.assertEquals(0, articleCount,
+            'No CaseArticle link must exist when createKb is false');
+    }
+
+    @IsTest
     static void saveResolution_caseClosesEvenWhenArticleFails() {
         Case c = new Case(
             Origin  = 'Web',
@@ -208,7 +238,7 @@ private class CaseResolveActionControllerTest {
 
         Test.startTest();
         CaseResolveActionController.SaveResult result =
-            CaseResolveActionController.saveResolution(c.Id, 'Should still close the case.');
+            CaseResolveActionController.saveResolution(c.Id, 'Should still close the case.', true);
         Test.stopTest();
 
         CaseResolveActionController.forceArticleFailureForTest = false;

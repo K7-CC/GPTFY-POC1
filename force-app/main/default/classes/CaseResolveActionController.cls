@@ -40,7 +40,7 @@ public with sharing class CaseResolveActionController {
 
     /**
      * Saves the agent-authored resolution text, closes the Case, and
-     * upserts a linked Draft Knowledge article in a single round trip.
+     * optionally upserts a linked Draft Knowledge article in a single round trip.
      *
      * The Case.Resolution__c field is declared as Html, but we deliberately
      * write the raw plain text the agent typed - no <p>/<br> wrapping and
@@ -51,13 +51,15 @@ public with sharing class CaseResolveActionController {
      * @param caseId          The Id of the Case to resolve. Required.
      * @param resolutionText  Plain-text resolution to copy verbatim into
      *                        Case.Resolution__c. Required, may not be blank.
+     * @param createKb        When true, upserts a linked Draft Knowledge article.
+     *                        When false, only closes the case and saves the resolution.
      *
      * @throws AuraHandledException if inputs are missing or the Case DML
      *         fails. Knowledge failures are non-fatal and surfaced via
      *         SaveResult.articleWarning.
      */
     @AuraEnabled
-    public static SaveResult saveResolution(Id caseId, String resolutionText) {
+    public static SaveResult saveResolution(Id caseId, String resolutionText, Boolean createKb) {
         if (caseId == null) {
             throw new AuraHandledException('Case Id is required.');
         }
@@ -85,13 +87,15 @@ public with sharing class CaseResolveActionController {
         SaveResult result = new SaveResult();
         result.caseClosed = true;
 
-        try {
-            upsertDraftArticleForCase(caseId, resolutionText, result);
-        } catch (Exception e) {
-            result.articleWarning =
-                'Case closed, but draft Knowledge article could not be saved: ' + e.getMessage();
-            System.debug(LoggingLevel.ERROR,
-                'CaseResolveActionController: KB draft failed for Case ' + caseId + ' - ' + e);
+        if (createKb == true) {
+            try {
+                upsertDraftArticleForCase(caseId, resolutionText, result);
+            } catch (Exception e) {
+                result.articleWarning =
+                    'Case closed, but draft Knowledge article could not be saved: ' + e.getMessage();
+                System.debug(LoggingLevel.ERROR,
+                    'CaseResolveActionController: KB draft failed for Case ' + caseId + ' - ' + e);
+            }
         }
 
         return result;

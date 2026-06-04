@@ -10,6 +10,7 @@ export default class CaseResolveAction extends LightningElement {
     resolutionText = '';
     errorMessage = '';
     isSaving = false;
+    updateKnowledgeBase = false;
 
     renderedCallback() {
         this.adjustTextareaHeight();
@@ -21,6 +22,10 @@ export default class CaseResolveAction extends LightningElement {
             this.errorMessage = '';
         }
         this.adjustTextareaHeight();
+    }
+
+    handleUpdateKbChange(event) {
+        this.updateKnowledgeBase = event.target.checked;
     }
 
     adjustTextareaHeight() {
@@ -56,10 +61,11 @@ export default class CaseResolveAction extends LightningElement {
         try {
             const result = await saveResolution({
                 caseId: this.recordId,
-                resolutionText: trimmed
+                resolutionText: trimmed,
+                createKb: this.updateKnowledgeBase
             });
 
-            const articleMessage = this.buildArticleMessage(result);
+            const articleMessage = this.updateKnowledgeBase ? this.buildArticleMessage(result) : '';
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Case resolved',

@@ -123,7 +123,9 @@
             <div class={recommendationBadgeClass}>{recommendationBadge}</div>
             <div class="cra-card">
                 <h3 class="cra-card-title">{recommendationTitle}</h3>
-                <div class="cra-card-body">{recommendation}</div>
+                <div class="cra-card-body">
+                    <lightning-formatted-rich-text value={recommendation}></lightning-formatted-rich-text>
+                </div>
             </div>
             <div class="cra-card-question">Did this answer resolve your question?</div>
             <div
