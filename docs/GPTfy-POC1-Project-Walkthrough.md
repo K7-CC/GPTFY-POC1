@@ -2,9 +2,9 @@
 
 **Audience:** Team / client presentation  
 **Prepared by:** Project creator  
-**Date:** June 5, 2026  
+**Date:** June 8, 2026  
 **Org:** `gptfy-poc1` (`kesavpoc@gptfy.com`)  
-**Latest checkpoint:** Git tag `Part-1` · latest commit `4a5a27a`
+**Latest checkpoint:** Git tag `Part-1` · latest commit `4a5a27a` · Part 3 complete (2026-06-08)
 
 ---
 
@@ -20,14 +20,14 @@ The business problem is straightforward:
 - Agents spend time on questions that could be self-served.
 - When cases are resolved, that knowledge is rarely captured in a reusable Knowledge Base.
 
-**What we built (Part 1 complete + Part 2 in progress):**
+**What we built (Parts 1, 2 & 3 complete):**
 
 | Goal | How we achieve it |
 |------|-------------------|
 | Deflect simple support questions with AI | Guest portal + GPTfy RAG (two AI paths available) |
 | Close cases automatically when the customer confirms | Platform Event + trigger |
 | Let agents resolve in one click | Resolve quick action |
-| Build a KB over time | Draft Knowledge articles on agent resolve + KB data pipeline |
+| Build a KB over time | AI-generated 6-article KB pipeline (KB Creation Prompt + KbArticleBuilderAction) |
 | Email the answer to the customer | Record-triggered email flow |
 | Support multiple Tungsten products | E-Invoicing, TotalAgility, PowerPDF |
 
@@ -170,23 +170,33 @@ The agent types the resolution in a rich-text area.
 
 ### Step 3 — Agent clicks Save
 
-Apex **CaseResolveActionController.saveResolution(caseId, resolutionText)** does three things:
+Apex **`CaseResolveActionController.saveResolution(caseId, resolutionText, createKb)`** does:
 
-1. **Updates the Case:** `Resolution__c` = typed text, `Status = 'Closed'`
-2. **Creates or updates a Draft Knowledge article:**
-   - Title = Case Subject
-   - Resolution = agent's text
-   - Linked to Case via `CaseArticle`
-   - Dedupes: if a draft already exists for this case, it updates instead of creating a duplicate
-3. **Returns a result** so the LWC can toast: *"Case resolved. Draft Knowledge article created/updated."*
+1. **Updates the Case:** `Resolution__c` = typed text, `Status = 'Closed'` — one DML.
+2. **If "Update Knowledge Base" is checked:** enqueues `KbCreationService` (Queueable) — this is fully asynchronous and runs after the Case DML commits.
+3. **Returns a `SaveResult`** so the LWC can toast: *"Case resolved. KB article generation queued."*
 
-KB creation is **best-effort** — if it fails, the case still closes and a warning toast is shown.
+KB creation is **best-effort and asynchronous** — the case closes immediately regardless of KB outcome.
 
-### Step 4 — Email (if guest email exists)
+### Step 4 — AI KB article generation (async)
+
+After the Case DML commits, `KbCreationService.execute()` runs in a separate transaction:
+
+1. Calls **`ccai__AIPromptProcessingInvokable`** (GPTfy managed package) with the **KB Creation Prompt** (`promptRequestId`) and the Case `recordId`
+2. GPTfy invokes the LLM with `Case.Subject` (portal question) + `Case.Resolution__c` (agent text)
+3. LLM returns a structured response with **6 Q&A pairs**: the original enhanced answer + 5 unique question phrasings (direct, how-to, troubleshooting, conceptual, scenario-based)
+4. GPTfy fires the configured **Prompt Action** → `KbArticleBuilderAction.invokeApex()` is called
+5. `KbArticleBuilderAction` parses the 6 pairs and bulk-inserts 6 draft `Knowledge__kav` articles, each linked to the Case via `CaseArticle`
+
+**Source fidelity:** The KB Creation Prompt strictly constrains the LLM to only use information the agent provided — no hallucination, no external knowledge. If the resolution is brief, the articles stay brief.
+
+**Why 6 articles?** Each unique phrasing improves vector store recall — when a future customer asks the same question differently, at least one of the 6 articles is more likely to surface as a RAG match.
+
+### Step 5 — Email (if guest email exists)
 
 Same email flow as the portal path (Path 3 below).
 
-**Design choice:** KB drafting is triggered on **agent resolve**, not on guest self-resolve. Portal-deflected closes copy AI text to `Resolution__c` but do not auto-draft KB articles yet (KCS-compliant KB drafting prompt is still pending).
+**Design choice:** The AI KB generation pipeline is triggered on **agent resolve only**, not on guest self-resolve. Portal-deflected closes copy AI text to `Resolution__c` but do not auto-draft KB articles (guest-resolved cases use short AI text, not an agent-authored resolution).
 
 ---
 
@@ -247,6 +257,56 @@ The vector store is only as good as the KB content loaded into it. With ~85,000 
 
 ---
 
+## 7.5 AI-powered KB article generation pipeline (NEW – Part 3)
+
+This is the **creation side** of the Knowledge Base — complementing the data load pipeline (which seeds the vector store with existing Tungsten FAQs), this pipeline grows the KB organically from every agent-resolved case.
+
+### How it connects to the agent resolve flow
+
+```
+Agent resolve modal
+    → "Update Knowledge Base" checkbox checked
+    → saveResolution(caseId, text, createKb=true)
+    → Case closed immediately (DML)
+    → KbCreationService enqueued (Queueable)
+
+KbCreationService.execute()
+    → ccai__AIPromptProcessingInvokable
+        promptRequestId = KB Creation Prompt
+        recordId        = Case Id
+
+KB Creation Prompt (LLM sees Case.Subject + Case.Resolution__c)
+    → Returns:
+        Portal Question: "[original question]"
+        OG Answer:       "[enhanced professional answer]"
+        Question 1–5:   "[5 unique question phrasings]"
+        Answer 1–5:     "[same enhanced answer, 5 times]"
+
+GPTfy fires Prompt Action → KbArticleBuilderAction.invokeApex()
+    → Parses 6 Q&A pairs
+    → Inserts 6 draft Knowledge__kav articles
+    → Inserts 6 CaseArticle links
+```
+
+### What the 6 articles look like
+
+| Article | Title (= question) | Answer (= `Resolution__c`) |
+|---------|--------------------|---------------------------|
+| 0 | Original portal question (exact) | Enhanced professional version of agent text |
+| 1 | Direct question variation | Same enhanced answer |
+| 2 | How-to variation | Same enhanced answer |
+| 3 | Troubleshooting variation | Same enhanced answer |
+| 4 | Conceptual variation | Same enhanced answer |
+| 5 | Scenario-based variation | Same enhanced answer |
+
+All 6 are inserted as **Draft** Knowledge articles. An admin or the agent can review and publish them.
+
+### Why this matters for the RAG vector store
+
+Every published article becomes searchable in the GPTfy vector store. The 6-phrasing strategy means the same resolution will be surfaced whether a future customer asks the question directly, starts with "How do I…", or describes a problem scenario — significantly improving PATH 2 RAG answer quality over time.
+
+---
+
 ## 8. Key Salesforce fields (Case)
 
 | Field | Purpose |
@@ -274,9 +334,11 @@ force-app/main/default/
 ├── aura/
 │   └── caseResolveActionAura/         ← Wrapper for quick action
 ├── classes/
-│   ├── CaseResolutionController.cls   ← Guest Apex (without sharing; sanitizeRecommendation; getProductOptions)
-│   ├── CaseResolveActionController.cls ← Agent Apex (with sharing)
-│   └── *Test.cls                      ← Unit tests
+│   ├── CaseResolutionController.cls    ← Guest Apex (without sharing; sanitizeRecommendation; getProductOptions)
+│   ├── CaseResolveActionController.cls ← Agent Apex (with sharing; createKb flag → enqueues KbCreationService)
+│   ├── KbCreationService.cls           ← Queueable; calls ccai__AIPromptProcessingInvokable (KB Creation Prompt)
+│   ├── KbArticleBuilderAction.cls      ← Prompt Action; parses LLM response; inserts 6 Knowledge__kav + CaseArticle
+│   └── *Test.cls                       ← Unit tests
 ├── triggers/
 │   └── CaseResolvedTrigger.trigger    ← Platform event subscriber
 ├── objects/
@@ -320,6 +382,10 @@ scripts/
     ├── testCaseResolutionEmail.apex
     ├── testCaseResolveActionUI.apex
     ├── testCaseResolveKbDraft.apex
+    ├── testKbCreation.apex            ← KB AI pipeline E2E (prompt → 6 articles)
+    ├── testSaveButtonE2E.apex         ← Agent Save with createKb=true E2E
+    ├── diagKbPromptInvocation.apex    ← Diagnoses GPTfy KB prompt invocation
+    ├── enableTraceAndTest.apex        ← Enables Apex trace flags for KB debugging
     ├── describeAgent.apex             ← Agent inspection utilities
     ├── readAgentPrompt.apex
     ├── updateAgentPrompt.apex
@@ -327,7 +393,8 @@ scripts/
 
 docs/
 ├── PRD.md                             ← Living product doc (auto-changelog)
-└── GPTfy-POC1-Project-Walkthrough.md ← This file
+├── GPTfy-POC1-Project-Walkthrough.md ← This file
+└── KB Creation Prompt                 ← KCS-compliant GPTfy prompt template (6 Q&A pairs per resolution)
 
 POC_CHECKLIST.md                       ← Full POC tracker
 ```
@@ -345,7 +412,7 @@ POC_CHECKLIST.md                       ← Full POC tracker
 - Apex unit tests + org verification scripts
 - GitHub repo + Part 1 checkpoint (`Part-1` tag)
 
-### Done — Part 2 (in progress, 2026-06-04 → 2026-06-05)
+### Done — Part 2 (complete, 2026-06-04 → 2026-06-05)
 
 - PATH 2: `CaseAIAgentTrigger` + `CaseAgentResolutionService` (Queueable, callout to `ccai.AIAgenticUtility`)
 - Switch mechanism between PATH 1 and PATH 2
@@ -360,13 +427,22 @@ POC_CHECKLIST.md                       ← Full POC tracker
 - Expanded verification scripts (RAG quality, sanitize, config, product, agent path)
 - Agent prompt utility scripts (describe, read, update, verify)
 
+### Done — Part 3 (complete, 2026-06-08)
+
+- KCS-compliant **KB Creation Prompt** (`docs/KB Creation Prompt`) — 1 original + 5 variations, strict source-fidelity constraint
+- **`KbCreationService.cls`** — Queueable + callout; invokes `ccai__AIPromptProcessingInvokable` with KB Creation Prompt
+- **`KbArticleBuilderAction.cls`** — Prompt Action; parses 6 Q&A pairs; bulk-inserts 6 draft `Knowledge__kav` + `CaseArticle` links; URL slug uniqueness via random hex suffix; graceful DML error handling
+- **`KbArticleBuilderActionTest.cls`** — unit tests (parser, URL slug, article creation, error paths)
+- **`CaseResolveActionController.cls`** updated — `createKb` boolean parameter; `SaveResult` return type
+- **`caseResolveAction.js`** updated — "Update Knowledge Base" checkbox
+- New scripts: `testKbCreation.apex`, `testSaveButtonE2E.apex`, `diagKbPromptInvocation.apex`, `enableTraceAndTest.apex`
+
 ### Still pending (for full POC sign-off)
 
 | Priority | Item |
 |----------|------|
 | High | **Decide AI path for demo** — activate PATH 1 (flow) or PATH 2 (agent) — never both |
 | High | Complete TotalAgility KB import (large dataset — batch jobs) |
-| Medium | GPTfy KCS-compliant KB drafting prompt for agent resolve |
 | Medium | DKIM verification for `cloudcompliance.app` email domain |
 | Medium | Deflection metrics and reports |
 | Medium | UAT + demo recording for leadership |
@@ -396,10 +472,12 @@ POC_CHECKLIST.md                       ← Full POC tracker
 ### Demo script — Agent resolve path
 
 1. Open an open Case (or one where the guest clicked **No**)
-2. Click **Resolve** in the highlights panel → type a resolution → Save
-3. Show: Case closed, toast confirms "Draft Knowledge article created/updated"
-4. Open the linked Knowledge article in draft status
-5. If `SuppliedEmail` exists on the case, show the email received by the customer
+2. Click **Resolve** in the highlights panel → type a resolution → check **"Update Knowledge Base"** → Save
+3. Show: Case closed, toast confirms "Case resolved. KB article generation queued."
+4. Wait ~10–30 seconds for the async pipeline to run
+5. Navigate to Knowledge in the App → filter by Status = Draft → show 6 new linked articles
+6. Highlight that each article has a different question phrasing (direct, how-to, troubleshooting, etc.)
+7. If `SuppliedEmail` exists on the case, show the email received by the customer
 
 ### Verification in org
 
@@ -412,6 +490,12 @@ sf apex run --file scripts/apex/agent-path/testAgentPath.apex --target-org gptfy
 
 # Test RAG answer quality
 sf apex run --file scripts/apex/testEssentialEightRag.apex --target-org gptfy-poc1
+
+# Test KB AI generation pipeline (end-to-end: prompt → 6 articles)
+sf apex run --file scripts/apex/testKbCreation.apex --target-org gptfy-poc1
+
+# Test Save button with createKb=true
+sf apex run --file scripts/apex/testSaveButtonE2E.apex --target-org gptfy-poc1
 ```
 
 Test records use subject prefix `cursor-test-{timestamp}` for easy cleanup.
@@ -420,7 +504,7 @@ Test records use subject prefix `cursor-test-{timestamp}` for easy cleanup.
 
 ## 12. One-sentence pitch for leadership
 
-> **GPTfy POC1 lets customers get instant AI answers on a public portal and close their own cases when satisfied — while agents resolve complex cases in one click and automatically draft Knowledge articles — with every resolution emailed back to the customer — backed by 85,000 Tungsten product FAQ articles in the vector store.**
+> **GPTfy POC1 lets customers get instant AI answers on a public portal and close their own cases when satisfied — while agents resolve complex cases in one click and automatically generate 6 AI-drafted Knowledge articles (1 original + 5 question-phrasing variations) — with every resolution emailed back to the customer — backed by 85,000 Tungsten product FAQ articles in the vector store and growing with every agent-resolved case.**
 
 ---
 
@@ -429,10 +513,11 @@ Test records use subject prefix `cursor-test-{timestamp}` for easy cleanup.
 1. **Business problem** (Section 1) — 2 min
 2. **Three paths + two AI modes overview** (Section 3) — 3 min
 3. **Live demo: guest portal** (Section 4) — 5 min
-4. **Live demo: agent resolve + KB** (Section 5) — 3 min
+4. **Live demo: agent resolve + AI KB generation** (Section 5) — 4 min
 5. **Email confirmation** (Section 6) — 1 min
 6. **KB data pipeline** (Section 7) — 2 min
-7. **What's next** (Section 10) — 2 min
+7. **AI KB generation pipeline** (Section 7.5) — 2 min
+8. **What's next** (Section 10) — 2 min
 
 ---
 

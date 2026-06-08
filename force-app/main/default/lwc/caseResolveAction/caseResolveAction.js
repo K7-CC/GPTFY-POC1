@@ -74,17 +74,6 @@ export default class CaseResolveAction extends LightningElement {
                 })
             );
 
-            if (result && result.articleWarning) {
-                this.dispatchEvent(
-                    new ShowToastEvent({
-                        title: 'Knowledge article not saved',
-                        message: result.articleWarning,
-                        variant: 'warning',
-                        mode: 'sticky'
-                    })
-                );
-            }
-
             getRecordNotifyChange([{ recordId: this.recordId }]);
             this.closeModal();
         } catch (error) {
@@ -96,14 +85,8 @@ export default class CaseResolveAction extends LightningElement {
     }
 
     buildArticleMessage(result) {
-        if (!result || result.articleWarning) {
-            return '';
-        }
-        if (result.articleCreated === true) {
-            return ' Draft Knowledge article created.';
-        }
-        if (result.articleCreated === false && result.articleId) {
-            return ' Draft Knowledge article updated.';
+        if (result && result.articleQueued === true) {
+            return ' KB articles are being generated in the background.';
         }
         return '';
     }
