@@ -198,11 +198,59 @@ public without sharing class CaseResolutionController {
         if (String.isBlank(raw)) {
             return null;
         }
-        String trimmed = raw.trim();
-        if (isLowQualityResponse(trimmed)) {
+        if (isLowQualityResponse(raw)) {
             return NO_ANSWER_MESSAGE;
         }
-        return trimmed;
+        return plainTextToHtml(raw);
+    }
+
+    /**
+     * Converts plain-text line breaks to HTML so that
+     * lightning-formatted-rich-text renders paragraphs and line breaks
+     * instead of collapsing everything into a single wall of text.
+     *
+     * Already-HTML input (starts with '<') is returned unchanged so that
+     * future agent prompts that emit HTML directly continue to work.
+     *
+     * When the agent returns everything as one long paragraph with no newlines,
+     * a heuristic splits on inline section headers of the form
+     * ". Title Case Words:" so each section still gets its own paragraph.
+     */
+    @TestVisible
+    private static String plainTextToHtml(String text) {
+        if (String.isBlank(text)) {
+            return text;
+        }
+        // If the agent already returned HTML, leave it alone.
+        if (text.trim().startsWith('<')) {
+            return text;
+        }
+        // Normalise Windows-style line endings.
+        String normalised = text.replace('\r\n', '\n').replace('\r', '\n');
+        // When the agent emits no newlines at all, apply a heuristic to split
+        // on inline section headers: a sentence boundary (". ") followed by
+        // one or more title-cased words then a colon (e.g. ". Token Generation:").
+        // We insert a double newline before each such header so the paragraph
+        // splitter below turns them into separate <p> blocks.
+        if (!normalised.contains('\n')) {
+            normalised = normalised.replaceAll(
+                '\\.\\s+(?=[A-Z][a-zA-Z]+(\\s+[A-Z][a-zA-Z]+){0,4}:)',
+                '.\n\n'
+            );
+        }
+        // Split on blank lines (two or more consecutive newlines) into paragraphs.
+        List<String> paragraphs = normalised.split('\\n{2,}');
+        List<String> htmlParagraphs = new List<String>();
+        for (String para : paragraphs) {
+            String trimmed = para.trim();
+            if (String.isBlank(trimmed)) {
+                continue;
+            }
+            // Within a paragraph, single newlines become <br/>.
+            String withBreaks = trimmed.replace('\n', '<br/>');
+            htmlParagraphs.add('<p>' + withBreaks + '</p>');
+        }
+        return String.join(htmlParagraphs, '');
     }
 
     private static Boolean isLowQualityResponse(String text) {

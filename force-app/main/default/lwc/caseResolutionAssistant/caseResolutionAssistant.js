@@ -24,6 +24,11 @@ const TIMEOUT_MESSAGE =
     'Our support team has your case and will follow up with you shortly.';
 const FALLBACK_MESSAGES = new Set([NO_ANSWER_MESSAGE, TIMEOUT_MESSAGE]);
 
+const MIN_QUESTION_WORDS = 10;
+const THIN_QUESTION_HINT =
+    'For better results, include more detail \u2014 for example, the product version, ' +
+    'error message, or what you were doing when the issue occurred.';
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BASE_INPUT_CLASS = 'cra-input';
 const TEXTAREA_CLASS = 'cra-input cra-textarea';
@@ -41,6 +46,7 @@ export default class CaseResolutionAssistant extends LightningElement {
     lastNameError = '';
     emailError = '';
     questionError = '';
+    questionHint = '';
 
     productOptions = [];
 
@@ -99,6 +105,9 @@ export default class CaseResolutionAssistant extends LightningElement {
         if (this.questionError) {
             this.questionError = this.validateQuestion();
         }
+        if (this.questionHint && !this.isQuestionThin()) {
+            this.questionHint = '';
+        }
     }
     handleProductChange(event) {
         this.product = event.target.value;
@@ -144,6 +153,11 @@ export default class CaseResolutionAssistant extends LightningElement {
             return 'Please describe what you need help with.';
         }
         return '';
+    }
+
+    isQuestionThin() {
+        const words = (this.question || '').trim().split(/\s+/).filter(w => w.length > 0);
+        return words.length < MIN_QUESTION_WORDS;
     }
 
     validateAll() {
@@ -224,12 +238,23 @@ export default class CaseResolutionAssistant extends LightningElement {
             : 'cra-error cra-error--hidden';
     }
 
+    get questionHintClass() {
+        return this.questionHint
+            ? 'cra-hint'
+            : 'cra-hint cra-hint--hidden';
+    }
+
     async handleFindSolution() {
         const isValid = this.validateAll();
         if (!isValid) {
             this.errorMessage = 'Please correct the highlighted fields before submitting.';
             return;
         }
+        if (this.isQuestionThin()) {
+            this.questionHint = THIN_QUESTION_HINT;
+            return;
+        }
+        this.questionHint = '';
         this.errorMessage = '';
         this.currentState = STATE.LOADING;
 
@@ -307,6 +332,7 @@ export default class CaseResolutionAssistant extends LightningElement {
         this.lastNameError = '';
         this.emailError = '';
         this.questionError = '';
+        this.questionHint = '';
         this.recommendation = '';
         this.recommendationIsFallback = false;
         this.caseId = null;
@@ -318,6 +344,13 @@ export default class CaseResolutionAssistant extends LightningElement {
             this.pollTimeoutId = null;
         }
         this.currentState = STATE.INPUT;
+
+        // Force-clear DOM input/textarea/select values because LWC does not
+        // always re-render native form elements when their bound property resets.
+        // eslint-disable-next-line @lwc/lwc/no-template-children
+        this.template.querySelectorAll('input, textarea, select').forEach(el => {
+            el.value = '';
+        });
     }
 
     disconnectedCallback() {

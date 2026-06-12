@@ -9,49 +9,41 @@
  * GPTfy calls invokeApex() with the ccai__AI_Response__c record after the
  * LLM returns its output. This method reads the response text and the
  * originating Case Id, then:
- *   1. Parses 6 Q&A pairs (1 original + 5 variations) from the response
- *   2. Inserts 6 draft Knowledge__kav articles (Title = question, Resolution__c = answer)
- *   3. Links all 6 articles back to the Case via CaseArticle
+ *   1. Parses Action (CREATE/UPDATE), ArticleId, Question, and Answer
+ *   2. Creates a new draft article OR updates an existing one
+ *   3. Links the article back to the Case via CaseArticle
+ *   4. Clears Case.KB_Prompt_Context__c staging record
  *
  * Expected prompt response format:
- *   Portal Question: "[question]"
- *   OG Answer: "[answer]"
- *
- *   Other possible Questions & Answers
- *
- *   Question 1: "[question]"
- *   Answer 1: "[answer]"
- *   ...
- *   Question 5: "[question]"
- *   Answer 5: "[answer]"
+ *   Action: CREATE or UPDATE
+ *   ArticleId: [Knowledge__kav Id if UPDATE, blank if CREATE]
+ *   Question: "[original customer question, exactly as submitted]"
+ *   Answer: "[enhanced professional answer]"
  */
 global without sharing class KbArticleBuilderAction implements ccai.AIPromptActionInterface {
 
-    // ─── Inner Q&A pair ────────────────────────────────────────────────────────
+    private static final String ACTION_CREATE = 'CREATE';
+    private static final String ACTION_UPDATE = 'UPDATE';
+
+    // ─── Parsed prompt result ──────────────────────────────────────────────────
 
     @TestVisible
-    private class QAPair {
+    class PromptResult {
+        public String action;
+        public String articleId;
         public String question;
         public String answer;
 
-        QAPair(String q, String a) {
-            this.question = q;
-            this.answer   = a;
+        PromptResult(String action, String articleId, String question, String answer) {
+            this.action    = action;
+            this.articleId = articleId;
+            this.question  = question;
+            this.answer    = answer;
         }
     }
 
     // ─── Interface entry point ─────────────────────────────────────────────────
 
-    /**
-     * Called by GPTfy after the KB Creation Prompt runs.
-     *
-     * GPTfy writes the LLM response text to ccai__AI_Processed_Data_PII_Added__c
-     * (ccai__Message__c stays null in the current GPTfy build).
-     * We read ccai__AI_Processed_Data_PII_Added__c first and fall back to
-     * ccai__Message__c for forward compatibility.
-     *
-     * ccai__Record_Id__c = the Id of the Case that triggered the prompt.
-     */
     global void invokeApex(ccai__AI_Response__c response) {
         String responseText = response?.ccai__AI_Processed_Data_PII_Added__c;
         if (String.isBlank(responseText)) {
@@ -60,11 +52,10 @@ global without sharing class KbArticleBuilderAction implements ccai.AIPromptActi
 
         if (String.isBlank(responseText)) {
             System.debug(LoggingLevel.WARN,
-                'KbArticleBuilderAction: blank/null AI response, skipping KB article creation.');
+                'KbArticleBuilderAction: blank/null AI response, skipping KB article processing.');
             return;
         }
 
-        // GPTfy wraps errors in {"error":{"message":"..."}} — skip those
         if (responseText.startsWith('{') && responseText.contains('"error"')) {
             System.debug(LoggingLevel.WARN,
                 'KbArticleBuilderAction: GPTfy returned an error response, skipping. Response: '
@@ -72,11 +63,10 @@ global without sharing class KbArticleBuilderAction implements ccai.AIPromptActi
             return;
         }
 
-        List<QAPair> pairs = parseResponse(responseText);
-
-        if (pairs.isEmpty()) {
+        PromptResult result = parseResponse(responseText);
+        if (result == null || String.isBlank(result.question) || String.isBlank(result.answer)) {
             System.debug(LoggingLevel.WARN,
-                'KbArticleBuilderAction: no Q&A pairs could be parsed from response.');
+                'KbArticleBuilderAction: no valid Q&A could be parsed from response.');
             return;
         }
 
@@ -87,55 +77,54 @@ global without sharing class KbArticleBuilderAction implements ccai.AIPromptActi
             } catch (Exception e) {
                 System.debug(LoggingLevel.WARN,
                     'KbArticleBuilderAction: could not parse Record Id "' +
-                    response.ccai__Record_Id__c + '" — articles will be created without a Case link.');
+                    response.ccai__Record_Id__c + '" — article will not be linked to Case.');
             }
         }
 
-        createKnowledgeArticles(pairs, caseId);
+        Id knowledgeArticleId = null;
+        if (ACTION_UPDATE.equalsIgnoreCase(result.action) && String.isNotBlank(result.articleId)) {
+            knowledgeArticleId = updateKnowledgeArticle(result);
+            if (knowledgeArticleId == null) {
+                System.debug(LoggingLevel.WARN,
+                    'KbArticleBuilderAction: UPDATE failed for ArticleId ' + result.articleId +
+                    ' — falling back to CREATE.');
+                knowledgeArticleId = createKnowledgeArticle(result);
+            }
+        } else {
+            knowledgeArticleId = createKnowledgeArticle(result);
+        }
+
+        if (caseId != null && knowledgeArticleId != null) {
+            linkArticleToCase(caseId, knowledgeArticleId);
+            clearPromptContext(caseId);
+        }
     }
 
     // ─── Response parser ───────────────────────────────────────────────────────
 
-    /**
-     * Extracts up to 6 Q&A pairs from the structured prompt response.
-     * Pair 0  → Portal Question + OG Answer (original)
-     * Pairs 1-5 → Question N + Answer N (variations)
-     */
     @TestVisible
-    static List<QAPair> parseResponse(String responseText) {
-        List<QAPair> pairs = new List<QAPair>();
+    static PromptResult parseResponse(String responseText) {
+        String action    = extractFirst(responseText, '(?i)Action:\\s*(CREATE|UPDATE)');
+        String articleId = extractFirst(responseText, '(?i)ArticleId:\\s*(\\S+)');
+        String question  = extractFirst(responseText, '(?i)Question:\\s*"([^"]+)"');
+        String answer    = extractFirst(responseText, '(?i)Answer:\\s*"([^"]+)"');
 
-        // Pair 0: original question and enhanced answer
-        String portalQ = extractFirst(responseText, 'Portal Question:\\s*"([^"]+)"');
-        String ogA     = extractFirst(responseText, 'OG Answer:\\s*"([^"]+)"');
-        if (String.isNotBlank(portalQ) && String.isNotBlank(ogA)) {
-            pairs.add(new QAPair(portalQ.trim(), ogA.trim()));
+        if (String.isBlank(action)) {
+            action = ACTION_CREATE;
+        }
+        if (ACTION_CREATE.equalsIgnoreCase(action)) {
+            articleId = null;
+        }
+        if (String.isBlank(question) || String.isBlank(answer)) {
+            return null;
         }
 
-        // Pairs 1-5: numbered variations
-        Pattern qPat = Pattern.compile('Question (\\d+):\\s*"([^"]+)"');
-        Pattern aPat = Pattern.compile('Answer (\\d+):\\s*"([^"]+)"');
-
-        Map<Integer, String> questions = new Map<Integer, String>();
-        Map<Integer, String> answers   = new Map<Integer, String>();
-
-        Matcher qm = qPat.matcher(responseText);
-        while (qm.find()) {
-            questions.put(Integer.valueOf(qm.group(1)), qm.group(2).trim());
-        }
-
-        Matcher am = aPat.matcher(responseText);
-        while (am.find()) {
-            answers.put(Integer.valueOf(am.group(1)), am.group(2).trim());
-        }
-
-        for (Integer i = 1; i <= 5; i++) {
-            if (questions.containsKey(i) && answers.containsKey(i)) {
-                pairs.add(new QAPair(questions.get(i), answers.get(i)));
-            }
-        }
-
-        return pairs;
+        return new PromptResult(
+            action.toUpperCase(),
+            String.isNotBlank(articleId) ? articleId.trim() : null,
+            question.trim(),
+            answer.trim()
+        );
     }
 
     private static String extractFirst(String text, String regexPattern) {
@@ -143,84 +132,125 @@ global without sharing class KbArticleBuilderAction implements ccai.AIPromptActi
         return m.find() ? m.group(1) : null;
     }
 
-    // ─── Article creation ──────────────────────────────────────────────────────
+    // ─── Article create / update ─────────────────────────────────────────────────
 
-    /**
-     * Bulk-inserts 6 draft Knowledge__kav articles and links them to the Case.
-     * Title is capped at 255 chars. A random suffix on UrlName guarantees
-     * uniqueness across the batch and against existing articles.
-     */
-    private static void createKnowledgeArticles(List<QAPair> pairs, Id caseId) {
-        List<Knowledge__kav> articlesToInsert = new List<Knowledge__kav>();
+    private static Id createKnowledgeArticle(PromptResult result) {
+        String title = buildTitle(result.question);
 
-        for (Integer i = 0; i < pairs.size(); i++) {
-            QAPair pair  = pairs[i];
-            String title = String.isBlank(pair.question) ? 'KB Article ' + i : pair.question;
-            if (title.length() > 255) {
-                title = title.substring(0, 255);
+        Knowledge__kav article = new Knowledge__kav(
+            Title         = title,
+            UrlName       = buildUrlSlug(result.question, 0),
+            Language      = 'en_US',
+            Resolution__c = result.answer
+        );
+
+        try {
+            insert article;
+        } catch (DmlException e) {
+            System.debug(LoggingLevel.ERROR,
+                'KbArticleBuilderAction: failed to insert Knowledge article — ' + e.getMessage());
+            return null;
+        }
+
+        Knowledge__kav refreshed = [
+            SELECT KnowledgeArticleId
+            FROM Knowledge__kav
+            WHERE Id = :article.Id
+            LIMIT 1
+        ];
+        return refreshed.KnowledgeArticleId;
+    }
+
+    private static Id updateKnowledgeArticle(PromptResult result) {
+        Id kavId;
+        try {
+            kavId = Id.valueOf(result.articleId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.WARN,
+                'KbArticleBuilderAction: invalid ArticleId "' + result.articleId + '"');
+            return null;
+        }
+
+        List<Knowledge__kav> existing = [
+            SELECT Id, KnowledgeArticleId, PublishStatus, Title
+            FROM Knowledge__kav
+            WHERE Id = :kavId
+            LIMIT 1
+        ];
+        if (existing.isEmpty()) {
+            System.debug(LoggingLevel.WARN,
+                'KbArticleBuilderAction: no Knowledge__kav found for Id ' + kavId);
+            return null;
+        }
+
+        Knowledge__kav current = existing[0];
+        String title = buildTitle(result.question);
+        Id draftKavId = current.Id;
+
+        if (current.PublishStatus == 'Online') {
+            try {
+                String draftKavIdStr = KbManagement.PublishingService.editOnlineArticle(
+                    String.valueOf(current.KnowledgeArticleId),
+                    false
+                );
+                draftKavId = Id.valueOf(draftKavIdStr);
+            } catch (Exception e) {
+                System.debug(LoggingLevel.ERROR,
+                    'KbArticleBuilderAction: editOnlineArticle failed — ' + e.getMessage());
+                return null;
             }
-
-            articlesToInsert.add(new Knowledge__kav(
-                Title         = title,
-                UrlName       = buildUrlSlug(pair.question, i),
-                Language      = 'en_US',
-                Resolution__c = pair.answer
-            ));
+        } else if (current.PublishStatus != 'Draft') {
+            System.debug(LoggingLevel.WARN,
+                'KbArticleBuilderAction: unsupported PublishStatus "' + current.PublishStatus +
+                '" for article ' + kavId);
+            return null;
         }
 
         try {
-            insert articlesToInsert;
+            update new Knowledge__kav(
+                Id            = draftKavId,
+                Title         = title,
+                Resolution__c = result.answer
+            );
         } catch (DmlException e) {
             System.debug(LoggingLevel.ERROR,
-                'KbArticleBuilderAction: failed to insert Knowledge articles — ' +
-                e.getMessage());
-            return;
+                'KbArticleBuilderAction: failed to update Knowledge article — ' + e.getMessage());
+            return null;
         }
 
-        if (caseId == null) {
-            return;
+        return current.KnowledgeArticleId;
+    }
+
+    private static String buildTitle(String question) {
+        String title = String.isBlank(question) ? 'KB Article' : question;
+        return title.length() > 255 ? title.substring(0, 255) : title;
+    }
+
+    // ─── Case linkage and cleanup ────────────────────────────────────────────────
+
+    private static void linkArticleToCase(Id caseId, Id knowledgeArticleId) {
+        try {
+            insert new CaseArticle(
+                CaseId             = caseId,
+                KnowledgeArticleId = knowledgeArticleId
+            );
+        } catch (DmlException e) {
+            System.debug(LoggingLevel.ERROR,
+                'KbArticleBuilderAction: failed to insert CaseArticle link — ' + e.getMessage());
         }
+    }
 
-        // Re-query to get KnowledgeArticleId (parent record, required by CaseArticle)
-        List<Id> kavIds = new List<Id>();
-        for (Knowledge__kav kav : articlesToInsert) {
-            kavIds.add(kav.Id);
-        }
-
-        List<Knowledge__kav> refreshed = [
-            SELECT Id, KnowledgeArticleId
-            FROM Knowledge__kav
-            WHERE Id IN :kavIds
-        ];
-
-        List<CaseArticle> links = new List<CaseArticle>();
-        for (Knowledge__kav kav : refreshed) {
-            if (kav.KnowledgeArticleId != null) {
-                links.add(new CaseArticle(
-                    CaseId             = caseId,
-                    KnowledgeArticleId = kav.KnowledgeArticleId
-                ));
-            }
-        }
-
-        if (!links.isEmpty()) {
-            try {
-                insert links;
-            } catch (DmlException e) {
-                System.debug(LoggingLevel.ERROR,
-                    'KbArticleBuilderAction: failed to insert CaseArticle links — ' +
-                    e.getMessage());
-            }
+    private static void clearPromptContext(Id caseId) {
+        try {
+            KbPromptContextService.clearForCase(caseId);
+        } catch (DmlException e) {
+            System.debug(LoggingLevel.WARN,
+                'KbArticleBuilderAction: failed to clear KB prompt context — ' + e.getMessage());
         }
     }
 
     // ─── URL slug helper ───────────────────────────────────────────────────────
 
-    /**
-     * Builds a URL-safe, unique slug for Knowledge__kav.UrlName.
-     * A random 8-char hex suffix prevents collisions within the batch
-     * and against existing articles in the org.
-     */
     @TestVisible
     static String buildUrlSlug(String question, Integer index) {
         String base = String.isBlank(question) ? 'kb-article' : question.toLowerCase();

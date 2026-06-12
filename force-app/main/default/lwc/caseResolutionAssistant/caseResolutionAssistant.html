@@ -103,6 +103,7 @@
                     <template if:true={questionError}>
                         <p class="cra-field-error" role="alert">{questionError}</p>
                     </template>
+                    <div class={questionHintClass} role="alert">{questionHint}</div>
                 </div>
                 <div class={errorClass}>{errorMessage}</div>
                 <button class="cra-button cra-button--primary" onclick={handleFindSolution}>

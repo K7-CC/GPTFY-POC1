@@ -27,7 +27,6 @@
         <viewAllRecords>false</viewAllRecords>
         <modifyAllRecords>false</modifyAllRecords>
     </objectPermissions>
-
     <fieldPermissions>
         <field>Case.Subject</field>
         <readable>true</readable>

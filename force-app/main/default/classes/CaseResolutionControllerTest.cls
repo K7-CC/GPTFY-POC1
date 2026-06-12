@@ -170,17 +170,17 @@ private class CaseResolutionControllerTest {
     }
 
     @IsTest
-    static void sanitizeRecommendation_preservesValidAnswer() {
+    static void sanitizeRecommendation_wrapsValidAnswerInParagraphTag() {
         String answer = 'Restart the service, then clear the cache folder.';
-        System.assertEquals(
-            answer,
-            CaseResolutionController.sanitizeRecommendation(answer),
-            'Valid KB answers must pass through unchanged'
-        );
+        String result = CaseResolutionController.sanitizeRecommendation(answer);
+        System.assert(result.contains('Restart the service'),
+            'Valid KB answer text must be preserved');
+        System.assert(result.startsWith('<p>') && result.endsWith('</p>'),
+            'Plain-text answers should be wrapped in <p> tags for rich-text rendering');
     }
 
     @IsTest
-    static void getRecommendation_returnsTextWhenDescriptionPopulated() {
+    static void getRecommendation_returnsHtmlWhenDescriptionPopulated() {
         Case c = new Case(
             Origin      = 'Web',
             Status      = 'New',
@@ -193,7 +193,52 @@ private class CaseResolutionControllerTest {
         String result = CaseResolutionController.getRecommendation(c.Id);
         Test.stopTest();
 
-        System.assertEquals('Here is the AI-generated answer.', result);
+        System.assert(result != null, 'Should return a non-null result');
+        System.assert(result.contains('Here is the AI-generated answer.'),
+            'Answer text must be present in the returned HTML');
+    }
+
+    @IsTest
+    static void plainTextToHtml_convertsDoubleNewlineToParagraphs() {
+        String input = 'First section.\n\nSecond section.';
+        String result = CaseResolutionController.plainTextToHtml(input);
+        System.assert(result.contains('<p>First section.</p>'), 'First paragraph should be wrapped');
+        System.assert(result.contains('<p>Second section.</p>'), 'Second paragraph should be wrapped');
+    }
+
+    @IsTest
+    static void plainTextToHtml_convertsSingleNewlineToBreak() {
+        String input = 'Line one.\nLine two.';
+        String result = CaseResolutionController.plainTextToHtml(input);
+        System.assert(result.contains('<br/>'), 'Single newline should become <br/>');
+        System.assert(result.contains('Line one.') && result.contains('Line two.'),
+            'Both lines must be present');
+    }
+
+    @IsTest
+    static void plainTextToHtml_passesHtmlThroughUnchanged() {
+        String html = '<p>Already formatted.</p>';
+        String result = CaseResolutionController.plainTextToHtml(html);
+        System.assertEquals(html, result, 'Existing HTML must not be double-processed');
+    }
+
+    @IsTest
+    static void plainTextToHtml_handlesBlankInput() {
+        System.assertEquals(null, CaseResolutionController.plainTextToHtml(null));
+        System.assertEquals('   ', CaseResolutionController.plainTextToHtml('   '));
+    }
+
+    @IsTest
+    static void plainTextToHtml_splitsInlineSectionHeaders() {
+        // Simulates the agent returning everything as one paragraph with no newlines,
+        // e.g. "Intro text. Token Generation: Do this. Token Permissions: Do that."
+        String input = 'Please review the following steps. Token Generation: Ensure the token is correct. Token Permissions: The token must have correct permissions.';
+        String result = CaseResolutionController.plainTextToHtml(input);
+        // Each section should end up in its own <p> block
+        System.assert(result.contains('<p>'), 'Result should contain paragraph tags');
+        Integer paraCount = result.countMatches('<p>');
+        System.assert(paraCount >= 2,
+            'Inline section headers should produce at least 2 paragraphs, got: ' + paraCount + ' | ' + result);
     }
 
     @IsTest
