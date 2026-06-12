@@ -5,9 +5,9 @@
  * "Update Knowledge Base" and clicks Save.
  *
  * Runs in TWO chained transactions:
- *   Phase 1 — SOSL candidate search + persist KB_Prompt_Context__c (DML only).
+ *   Phase 1 — SOSL candidate search + persist Case.KB_Candidates__c (DML only).
  *   Phase 2 — Invoke GPTfy prompt (callout only), after Phase 1 commits so
- *             GPTfy's data-extraction REST query can see KB_Prompt_Context__r.Candidates__c.
+ *             GPTfy's data-extraction REST query can see KB_Candidates__c.
  *
  * After the prompt runs, GPTfy fires the configured Prompt Action which calls
  * KbArticleBuilderAction to parse the response and create or update the article.
@@ -49,10 +49,10 @@ public without sharing class KbCreationService implements Queueable, Database.Al
             ];
 
             String candidatesText = KbCandidateSearchService.searchAndSerialize(c.Subject);
-            Id contextId = KbPromptContextService.saveCandidates(caseId, candidatesText);
+            KbPromptContextService.saveCandidates(caseId, candidatesText);
 
             System.debug(LoggingLevel.INFO,
-                'KbCreationService: KB_Prompt_Context__c ' + contextId + ' set (' +
+                'KbCreationService: KB_Candidates__c set (' +
                 (candidatesText == KbCandidateSearchService.NONE_MARKER ? 'NONE' : 'candidates found') +
                 ') for Case ' + caseId + ' — chaining prompt invocation');
 
@@ -75,15 +75,15 @@ public without sharing class KbCreationService implements Queueable, Database.Al
 
         try {
             Case c = [
-                SELECT Id, KB_Prompt_Context__c, KB_Prompt_Context__r.Candidates__c
+                SELECT Id, KB_Candidates__c
                 FROM Case
                 WHERE Id = :caseId
                 LIMIT 1
             ];
 
-            if (c.KB_Prompt_Context__c == null) {
+            if (c.KB_Candidates__c == null) {
                 System.debug(LoggingLevel.ERROR,
-                    'KbCreationService: KB_Prompt_Context__c missing on Case ' + caseId +
+                    'KbCreationService: KB_Candidates__c missing on Case ' + caseId +
                     ' — aborting prompt invocation');
                 return;
             }

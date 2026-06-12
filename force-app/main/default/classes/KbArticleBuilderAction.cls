@@ -12,7 +12,7 @@
  *   1. Parses Action (CREATE/UPDATE), ArticleId, Question, and Answer
  *   2. Creates a new draft article OR updates an existing one
  *   3. Links the article back to the Case via CaseArticle
- *   4. Clears Case.KB_Prompt_Context__c staging record
+ *   4. Clears Case.KB_Candidates__c staging field
  *
  * Expected prompt response format:
  *   Action: CREATE or UPDATE

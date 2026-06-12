@@ -1,42 +1,35 @@
 /**
- * Creates and clears {@link KB_Prompt_Context__c} staging records on Case.
+ * Writes and clears {@link Case.KB_Candidates__c} staging data for the KB Creation Prompt.
  */
 public without sharing class KbPromptContextService {
 
     /**
-     * Persists candidate search results and links them to the Case for GPTfy merge fields.
+     * Persists candidate search results on the Case for GPTfy merge fields.
      */
-    public static Id saveCandidates(Id caseId, String candidatesText) {
-        KB_Prompt_Context__c contextRecord = new KB_Prompt_Context__c(
-            Case__c         = caseId,
-            Candidates__c   = candidatesText
-        );
-        insert contextRecord;
-
+    public static void saveCandidates(Id caseId, String candidatesText) {
         update new Case(
-            Id                   = caseId,
-            KB_Prompt_Context__c = contextRecord.Id
+            Id               = caseId,
+            KB_Candidates__c = candidatesText
         );
-
-        return contextRecord.Id;
     }
 
     /**
-     * Removes the staging lookup from Case and deletes the context record.
+     * Clears staged candidate text from the Case after KB processing completes.
      */
     public static void clearForCase(Id caseId) {
         List<Case> cases = [
-            SELECT KB_Prompt_Context__c
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :caseId
             LIMIT 1
         ];
-        if (cases.isEmpty() || cases[0].KB_Prompt_Context__c == null) {
+        if (cases.isEmpty() || cases[0].KB_Candidates__c == null) {
             return;
         }
 
-        Id contextId = cases[0].KB_Prompt_Context__c;
-        update new Case(Id = caseId, KB_Prompt_Context__c = null);
-        delete new KB_Prompt_Context__c(Id = contextId);
+        update new Case(
+            Id               = caseId,
+            KB_Candidates__c = null
+        );
     }
 }

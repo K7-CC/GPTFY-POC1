@@ -1,6 +1,6 @@
 /**
  * Finds existing Knowledge articles that may match a Case subject via SOSL,
- * then serializes them for the KB Creation Prompt ({!Case.KB_Candidates__c}).
+ * then serializes them for the KB Creation Prompt merge field Case.KB_Candidates__c.
  */
 public without sharing class KbCandidateSearchService {
 

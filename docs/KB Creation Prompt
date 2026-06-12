@@ -9,7 +9,7 @@ Agent Resolution:
 {!Case.Resolution__c}
 
 Existing KB Candidates (pre-search results; may be blank or "NONE"):
-{!Case.KB_Prompt_Context__r.Candidates__c}
+{!Case.KB_Candidates__c}
 
 ---
 

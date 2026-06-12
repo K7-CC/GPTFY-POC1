@@ -5,7 +5,7 @@
 private class KbCreationServiceTest {
 
     @IsTest
-    static void execute_savesPromptContextBeforePromptInvocation() {
+    static void execute_savesCandidatesBeforePromptInvocation() {
         Case c = new Case(
             Origin  = 'Phone',
             Status  = 'New',
@@ -18,15 +18,13 @@ private class KbCreationServiceTest {
         Test.stopTest();
 
         Case after = [
-            SELECT KB_Prompt_Context__c, KB_Prompt_Context__r.Candidates__c
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :c.Id
         ];
 
-        System.assertNotEquals(null, after.KB_Prompt_Context__c,
-            'Queueable should create and link a KB prompt context record');
-        System.assertNotEquals(null, after.KB_Prompt_Context__r.Candidates__c,
-            'Candidates text should be populated on the context record');
+        System.assertNotEquals(null, after.KB_Candidates__c,
+            'Queueable should populate KB_Candidates__c on Case');
 
         List<AsyncApexJob> jobs = [
             SELECT Status
@@ -40,7 +38,7 @@ private class KbCreationServiceTest {
     }
 
     @IsTest
-    static void invokePromptOnly_requiresLinkedContext() {
+    static void invokePromptOnly_requiresCandidatesField() {
         Case c = new Case(
             Origin  = 'Phone',
             Status  = 'New',
@@ -53,20 +51,20 @@ private class KbCreationServiceTest {
         Test.stopTest();
 
         Case after = [
-            SELECT KB_Prompt_Context__c
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :c.Id
         ];
-        System.assertEquals(null, after.KB_Prompt_Context__c,
-            'Prompt-only phase should abort when no context is linked');
+        System.assertEquals(null, after.KB_Candidates__c,
+            'Prompt-only phase should abort when KB_Candidates__c is blank');
     }
 
     @IsTest
-    static void invokePromptOnly_withLinkedContext_reachesPromptInvocation() {
+    static void invokePromptOnly_withCandidates_reachesPromptInvocation() {
         Case c = new Case(
             Origin  = 'Phone',
             Status  = 'New',
-            Subject = 'cursor-test prompt-only with context'
+            Subject = 'cursor-test prompt-only with candidates'
         );
         insert c;
 
@@ -80,13 +78,11 @@ private class KbCreationServiceTest {
         Test.stopTest();
 
         Case after = [
-            SELECT KB_Prompt_Context__c, KB_Prompt_Context__r.Candidates__c
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :c.Id
         ];
-        System.assertNotEquals(null, after.KB_Prompt_Context__c,
-            'Context should remain linked through prompt-only phase');
-        System.assertEquals(KbCandidateSearchService.NONE_MARKER,
-            after.KB_Prompt_Context__r.Candidates__c);
+        System.assertEquals(KbCandidateSearchService.NONE_MARKER, after.KB_Candidates__c,
+            'Candidates should remain on Case through prompt-only phase');
     }
 }

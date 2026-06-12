@@ -53,18 +53,16 @@ System.debug('First 800 chars:\n' + serialized.left(800));
 
 System.debug('=== RECENT CASES WITH LICENSE IN SUBJECT ===');
 for (Case c : [
-    SELECT Id, Subject, CreatedDate, KB_Prompt_Context__c, KB_Prompt_Context__r.Candidates__c
+    SELECT Id, Subject, CreatedDate, KB_Candidates__c
     FROM Case
     WHERE Subject LIKE '%License Activation%'
     ORDER BY CreatedDate DESC
     LIMIT 3
 ]) {
     System.debug('Case: ' + c.Id + ' | Created: ' + c.CreatedDate + ' | Subject: ' + c.Subject);
-    if (c.KB_Prompt_Context__r != null) {
-        String cand = c.KB_Prompt_Context__r.Candidates__c;
-        System.debug('  Candidates contain target: ' + (cand != null && cand.contains(targetTitle)));
-        System.debug('  Candidates first 400: ' + (cand == null ? 'null' : cand.left(400)));
-    }
+    String cand = c.KB_Candidates__c;
+    System.debug('  Candidates contain target: ' + (cand != null && cand.contains(targetTitle)));
+    System.debug('  Candidates first 400: ' + (cand == null ? 'null' : cand.left(400)));
 }
 
 System.debug('=== DONE ===');

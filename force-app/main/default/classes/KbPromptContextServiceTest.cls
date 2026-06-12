@@ -5,7 +5,7 @@
 private class KbPromptContextServiceTest {
 
     @IsTest
-    static void saveCandidates_createsContextAndLinksCase() {
+    static void saveCandidates_writesToCaseField() {
         Case c = new Case(
             Origin  = 'Phone',
             Status  = 'New',
@@ -14,29 +14,22 @@ private class KbPromptContextServiceTest {
         insert c;
 
         Test.startTest();
-        Id contextId = KbPromptContextService.saveCandidates(
+        KbPromptContextService.saveCandidates(
             c.Id,
             KbCandidateSearchService.NONE_MARKER
         );
         Test.stopTest();
 
-        KB_Prompt_Context__c contextRecord = [
-            SELECT Candidates__c
-            FROM KB_Prompt_Context__c
-            WHERE Id = :contextId
-        ];
-        System.assertEquals(KbCandidateSearchService.NONE_MARKER, contextRecord.Candidates__c);
-
-        Case linkedCase = [
-            SELECT KB_Prompt_Context__c
+        Case updatedCase = [
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :c.Id
         ];
-        System.assertEquals(contextId, linkedCase.KB_Prompt_Context__c);
+        System.assertEquals(KbCandidateSearchService.NONE_MARKER, updatedCase.KB_Candidates__c);
     }
 
     @IsTest
-    static void clearForCase_removesLookupAndDeletesContext() {
+    static void clearForCase_clearsCandidatesField() {
         Case c = new Case(
             Origin  = 'Phone',
             Status  = 'New',
@@ -44,24 +37,17 @@ private class KbPromptContextServiceTest {
         );
         insert c;
 
-        Id contextId = KbPromptContextService.saveCandidates(c.Id, 'CANDIDATE_1\nId: test');
+        KbPromptContextService.saveCandidates(c.Id, 'CANDIDATE_1\nId: test');
 
         Test.startTest();
         KbPromptContextService.clearForCase(c.Id);
         Test.stopTest();
 
         Case clearedCase = [
-            SELECT KB_Prompt_Context__c
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :c.Id
         ];
-        System.assertEquals(null, clearedCase.KB_Prompt_Context__c);
-
-        Integer remaining = [
-            SELECT COUNT()
-            FROM KB_Prompt_Context__c
-            WHERE Id = :contextId
-        ];
-        System.assertEquals(0, remaining, 'Context record should be deleted');
+        System.assertEquals(null, clearedCase.KB_Candidates__c);
     }
 }

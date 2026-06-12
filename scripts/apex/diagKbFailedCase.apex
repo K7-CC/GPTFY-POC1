@@ -1,17 +1,13 @@
 Id caseId = '500dN00000PIMGeQAP';
 
 Case c = [
-    SELECT Id, Subject, Resolution__c, KB_Prompt_Context__c,
-           KB_Prompt_Context__r.Candidates__c, Status
+    SELECT Id, Subject, Resolution__c, KB_Candidates__c, Status
     FROM Case
     WHERE Id = :caseId
     LIMIT 1
 ];
 System.debug('Case: ' + c.Subject);
-System.debug('KB_Prompt_Context__c: ' + c.KB_Prompt_Context__c);
-System.debug('Candidates length: ' + (c.KB_Prompt_Context__r == null ? 'null rel'
-    : String.valueOf(c.KB_Prompt_Context__r.Candidates__c == null ? 0
-        : c.KB_Prompt_Context__r.Candidates__c.length())));
+System.debug('Candidates length: ' + (c.KB_Candidates__c == null ? 0 : c.KB_Candidates__c.length()));
 
 List<ccai__AI_Response__c> responses = [
     SELECT Id, Name, ccai__record_id__c, ccai__status__c, ccai__message__c,

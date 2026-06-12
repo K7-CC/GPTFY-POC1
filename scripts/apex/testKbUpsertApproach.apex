@@ -50,13 +50,7 @@ Case updateCase = new Case(
 );
 insert updateCase;
 
-KB_Prompt_Context__c contextRecord = new KB_Prompt_Context__c(
-    Case__c       = updateCase.Id,
-    Candidates__c = candidates
-);
-insert contextRecord;
-        updateCase.KB_Prompt_Context__c = contextRecord.Id;
-        update updateCase;
+KbPromptContextService.saveCandidates(updateCase.Id, candidates);
 
 String mergedAnswer =
     'Ensure the license key matches your product edition. Re-enter the key under Help > License Manager. ' +
@@ -126,9 +120,9 @@ System.debug('=== CREATE PATH RESULT ===');
 System.debug('CaseArticle links: ' + createLinks.size());
 System.assertEquals(1, createLinks.size(), 'FAIL: CREATE path should link one new article');
 
-Case clearedCase = [SELECT KB_Prompt_Context__c FROM Case WHERE Id = :updateCase.Id];
-System.assertEquals(null, clearedCase.KB_Prompt_Context__c,
-    'FAIL: KB_Prompt_Context__c should be cleared after prompt action');
+Case clearedCase = [SELECT KB_Candidates__c FROM Case WHERE Id = :updateCase.Id];
+System.assertEquals(null, clearedCase.KB_Candidates__c,
+    'FAIL: KB_Candidates__c should be cleared after prompt action');
 
 System.debug('=== CURSOR TEST COMPLETE ===');
 System.debug('Marker: ' + marker);

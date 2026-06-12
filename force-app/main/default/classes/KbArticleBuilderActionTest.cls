@@ -101,12 +101,12 @@ private class KbArticleBuilderActionTest {
         System.assertEquals(1, links.size(), 'One CaseArticle link must be created');
 
         Case refreshedCase = [
-            SELECT KB_Prompt_Context__c
+            SELECT KB_Candidates__c
             FROM Case
             WHERE Id = :c.Id
         ];
-        System.assertEquals(null, refreshedCase.KB_Prompt_Context__c,
-            'KB_Prompt_Context__c should be cleared after processing');
+        System.assertEquals(null, refreshedCase.KB_Candidates__c,
+            'KB_Candidates__c should be cleared after processing');
     }
 
     @IsTest
@@ -126,12 +126,7 @@ private class KbArticleBuilderActionTest {
         );
         insert c;
 
-        KB_Prompt_Context__c contextRecord = new KB_Prompt_Context__c(
-            Case__c       = c.Id,
-            Candidates__c = 'CANDIDATE_1\nId: ' + existing.Id
-        );
-        insert contextRecord;
-        c.KB_Prompt_Context__c = contextRecord.Id;
+        c.KB_Candidates__c = 'CANDIDATE_1\nId: ' + existing.Id;
         update c;
 
         String updateResponse = UPDATE_RESPONSE_PREFIX.replace(
